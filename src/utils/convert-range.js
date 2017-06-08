@@ -9,6 +9,5 @@
  * @param {number} newMax - End of range 2
  * @return {number}
  */
-const convertToRange = (value, oldMin, oldMax, newMin, newMax) => (((value - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin;
-
-export default convertToRange;
+const convertRange = (value, oldMin, oldMax, newMin, newMax) => (((value - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin;
+export default convertRange;
