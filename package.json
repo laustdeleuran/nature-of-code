@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/laustdeleuran/nature-of-code#readme",
   "dependencies": {
+    "captainslog": "^0.3.2",
     "raf": "^3.3.2"
   },
   "devDependencies": {

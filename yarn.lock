@@ -1015,6 +1015,12 @@ caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
   version "1.0.30000679"
   resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000679.tgz#dd7be12f16577e5d6ae6db880c6d619e77dca365"
 
+captainslog@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/captainslog/-/captainslog-0.3.2.tgz#4b92755ccf7616adb5d30e12f9f254158bde2b96"
+  dependencies:
+    stardate "0.0.4"
+
 caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
@@ -4176,6 +4182,10 @@ sshpk@^1.7.0:
     jodid25519 "^1.0.0"
     jsbn "~0.1.0"
     tweetnacl "~0.14.0"
+
+stardate@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/stardate/-/stardate-0.0.4.tgz#478109a4890bc62b2de1de5e249f2aeaa5baa0e5"
 
 "statuses@>= 1.3.1 < 2", statuses@~1.3.1:
   version "1.3.1"
