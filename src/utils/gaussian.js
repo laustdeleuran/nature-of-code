@@ -4,10 +4,20 @@
  * @source https://en.wikipedia.org/wiki/Marsaglia_polar_method
  */
 export default class Gaussian {
+
+	/**
+	 * @constructor
+	 * @param {number} mean
+	 * @param {number} sd - standard deviation
+	 */
 	constructor(mean = 0, sd = 1) {
 		this.mean = mean;
 		this.sd = sd;
 	}
+
+	/**
+	 * Generates number
+	 */
 	generate() {
 		var y1, x1, x2, w;
 		if (this._previous) {
