@@ -16,7 +16,7 @@ const animator = new Animator(),
 
 
 /**
- * Gaussian walker
+ * Perlin noise walker
  */
 class Walker {
 
