@@ -1,5 +1,4 @@
 import { getWindowSize, bindResizeEvents, unbindResizeEvents } from './resize';
-import log from './log';
 
 
 
@@ -47,8 +46,7 @@ export default class Canvas {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
-			log.warn('Canvas._setup() - Trying to set up canvas with no canvas available.');
-			return;
+			throw Error('Canvas._setup() - Trying to set up canvas with no canvas available.');
 		}
 
 		// Add resize listener
@@ -71,8 +69,7 @@ export default class Canvas {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
-			log.warn('Canvas.resize() - Trying to resize canvas with no canvas available.');
-			return;
+			throw Error('Canvas.resize() - Trying to resize canvas with no canvas available.');
 		}
 
 		const size = getWindowSize();
@@ -92,8 +89,7 @@ export default class Canvas {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
-			log.warn('Canvas.getContext() - Trying to get context with no canvas available.');
-			return;
+			throw Error('Canvas.getContext() - Trying to get context with no canvas available.');
 		}
 
 		return canvas.getContext(type, attributes);
@@ -124,8 +120,7 @@ export default class Canvas {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
-			log.warn('Canvas.element - Trying to get canvas element with no canvas available.');
-			return;
+			throw Error('Canvas.element - Trying to get canvas element with no canvas available.');
 		}
 
 		return canvas;
@@ -139,8 +134,7 @@ export default class Canvas {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
-			log.warn('Canvas.width - Trying to get width with no canvas available.');
-			return;
+			throw Error('Canvas.width - Trying to get width with no canvas available.');
 		}
 
 		return canvas.width;
@@ -154,8 +148,7 @@ export default class Canvas {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
-			log.warn('Canvas.height - Trying to get height with no canvas available.');
-			return;
+			throw Error('Canvas.height - Trying to get height with no canvas available.');
 		}
 
 		return canvas.height;
@@ -170,8 +163,7 @@ export default class Canvas {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
-			log.warn('Canvas.width - Trying to set width with no canvas available.');
-			return;
+			throw Error('Canvas.width - Trying to set width with no canvas available.');
 		}
 
 		return canvas.width = value;
@@ -186,8 +178,7 @@ export default class Canvas {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
-			log.warn('Canvas.height - Trying to set height with no canvas available.');
-			return;
+			throw Error('Canvas.height - Trying to set height with no canvas available.');
 		}
 
 		return canvas.height = value;
