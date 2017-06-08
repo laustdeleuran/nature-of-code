@@ -1,6 +1,6 @@
 import Canvas from '../../utils/canvas';
 import Animator from '../../utils/animator';
-import Gaussian from '../../utils/gaussian';
+import random from '../../utils/random';
 
 import '../base.scss';
 
@@ -18,12 +18,11 @@ const animator = new Animator(),
  * Gaussian walker
  */
 class Walker {
-	constructor(x = Math.floor(canvas.width/2), y = Math.floor(canvas.height/2), size = 2, color = 'rgba(255, 255, 255, 0.5)') {
+	constructor(x = Math.floor(canvas.width/2), y = Math.floor(canvas.height/2), size = 1, color = '#fff') {
 		this.x = x;
 		this.y = y;
 		this.size = size;
 		this.color = color;
-		this.gaussian = new Gaussian(0, 3);
 	}
 
 	draw() {
@@ -37,8 +36,8 @@ class Walker {
 	}
 
 	move() {
-		this.x += this.gaussian.generate();
-		this.y += this.gaussian.generate();
+		this.x += random({ value: 1, prob: 0.6 }, -1);
+		this.y += random(1, -1);
 	}
 }
 

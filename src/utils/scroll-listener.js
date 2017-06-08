@@ -174,7 +174,7 @@ export default class ScrollListener {
 		};
 
 		let syntheticListener = genericListener;
-		element.addEventListener('syntheticScroll', syntheticListener,  Modernizr.passiveeventlisteners ? { passive } : false);
+		element.addEventListener('syntheticScroll', syntheticListener, Modernizr.passiveeventlisteners ? { passive } : false);
 		this._internalListeners.push({
 			element: element,
 			type: 'synthetic',
@@ -184,7 +184,7 @@ export default class ScrollListener {
 		let loadListener = event => setTimeout(() => {
 			this._start(event);
 		}, 500);
-		window.addEventListener('load', loadListener,  Modernizr.passiveeventlisteners ? { passive } : false);
+		window.addEventListener('load', loadListener, Modernizr.passiveeventlisteners ? { passive } : false);
 		this._internalListeners.push({
 			element: window,
 			type: 'load',
@@ -192,7 +192,7 @@ export default class ScrollListener {
 		});
 
 		let scrollListener = genericListener;
-		element.addEventListener('scroll', scrollListener,  Modernizr.passiveeventlisteners ? { passive } : false);
+		element.addEventListener('scroll', scrollListener, Modernizr.passiveeventlisteners ? { passive } : false);
 		this._internalListeners.push({
 			element: element,
 			type: 'scroll',
@@ -201,7 +201,7 @@ export default class ScrollListener {
 
 		if (hasWheelEvent) {
 			let wheelListener = genericListener;
-			element.addEventListener('wheel', wheelListener,  Modernizr.passiveeventlisteners ? { passive } : false);
+			element.addEventListener('wheel', wheelListener, Modernizr.passiveeventlisteners ? { passive } : false);
 			this._internalListeners.push({
 				element: element,
 				type: 'wheel',
@@ -211,7 +211,7 @@ export default class ScrollListener {
 
 		if (hasMouseWheelEvent) {
 			let mouseWheelListener = genericListener;
-			element.addEventListener('mousewheel', mouseWheelListener,  Modernizr.passiveeventlisteners ? { passive } : false);
+			element.addEventListener('mousewheel', mouseWheelListener, Modernizr.passiveeventlisteners ? { passive } : false);
 			this._internalListeners.push({
 				element: element,
 				type: 'mousewheel',
@@ -221,7 +221,7 @@ export default class ScrollListener {
 
 		if (hasTouch) {
 			let touchStartListener = genericListener;
-			element.addEventListener('touchstart', touchStartListener,  Modernizr.passiveeventlisteners ? { passive } : false);
+			element.addEventListener('touchstart', touchStartListener, Modernizr.passiveeventlisteners ? { passive } : false);
 			this._internalListeners.push({
 				element: element,
 				type: 'touchstart',
@@ -229,7 +229,7 @@ export default class ScrollListener {
 			});
 
 			let touchMoveListener = genericListener;
-			element.addEventListener('touchmove', touchMoveListener,  Modernizr.passiveeventlisteners ? { passive } : false);
+			element.addEventListener('touchmove', touchMoveListener, Modernizr.passiveeventlisteners ? { passive } : false);
 			this._internalListeners.push({
 				element: element,
 				type: 'touchmove',
@@ -262,7 +262,7 @@ export default class ScrollListener {
 
 		if (hasKeyDown) {
 			let keyDownListener = genericListener;
-			element.addEventListener('keydown', keyDownListener,  Modernizr.passiveeventlisteners ? { passive } : false);
+			element.addEventListener('keydown', keyDownListener, Modernizr.passiveeventlisteners ? { passive } : false);
 			this._internalListeners.push({
 				element: element,
 				type: 'keydown',
