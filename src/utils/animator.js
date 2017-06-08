@@ -1,48 +1,81 @@
+'use strict';
+
 /**
- * @const animator
- * @desc
- * Singleton handling animating a given function and optionally clearing the canvas
+ * @name Animator
  */
-const animator = {
+import raf from 'raf';
+
+
+
+/**
+ * @class
+ * @classdesc
+ * Animation handler running at approximately given fps
+ */
+export default class Animator {
 
 	/**
-	 * Frames per second
+	 * @constructor
 	 */
-	fps: 1000 / 60,
+	constructor() {
+		this._props = {};
+	}
 
 	/**
-	 * Animator step
+	 * @method
+	 * @desc
+	 * Starts animation
+	 *
+	 * @param {function} tick - animation function to run each cycle
 	 */
-	step() {
-		if (this.draw) {
-			this.draw();
+	start(tick) {
+		this.stop();
+
+		this.isAnimating = true;
+		this._props.frame = 0;
+		this._props.lastTime = undefined;
+
+		if (typeof tick === 'function') {
+			this._props.tick = tick;
 		}
-	},
+
+		this._tick();
+	}
 
 	/**
-	 * Start animator
+	 * @method
+	 * @desc
+	 * Run animation
 	 */
-	animate(draw) {
-		var now = Date.now();
+	_tick() {
+		const { lastTime, tick, frame } = this._props;
 
-		if (typeof draw === 'function') {
-			this.draw = draw;
+		// Request next frame (needs to be top of function, so any subsequent calls to `.stop() will work)
+		this._props.request = raf(() => this._tick());
+
+		// Update time
+		let timeDelta = 0,
+			currentTime = Date.now();
+		if (lastTime) {
+			timeDelta = currentTime - lastTime;
 		}
+		this._props.lastTime = currentTime;
 
-		if (this.lastFrameDate === undefined || (now - this.lastFrameDate > this.fps)) {
-			this.lastFrameDate = now;
-			this.step();
+		// Run provided function
+		if (tick) {
+			tick(frame, timeDelta);
 		}
-
-		this.animationFrame = window.requestAnimationFrame(() => this.animate());
-	},
+		this._props.frame++;
+	}
 
 	/**
-	 * Stop animator
+	 * @method
+	 * @desc
+	 * Stop animation
 	 */
 	stop() {
-		window.cancelAnimationFrame(this.animationFrame);
-	}
-};
+		this.isAnimating = false;
 
-export default animator;
+		raf.cancel(this._props.request);
+	}
+}
