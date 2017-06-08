@@ -1,0 +1,29 @@
+# hidden from IDE's and the likes
+.idea
+.tmp
+.sass-cache
+.anvil
+.env
+compass_app_log.txt
+atlassian-ide-plugin.xml
+*.sublime-workspace
+
+# npm installs
+node_modules*
+npm-debug.log
+
+# newrelic
+newrelic_agent.log
+
+# OS shit
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# CMS / docs / built code
+docs
+build

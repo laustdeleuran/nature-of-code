@@ -1,0 +1,33 @@
+{
+	"parser": "babel-eslint",
+	"extends": "eslint:recommended",
+	"env": {
+		"browser": true,
+		"es6": true,
+		"node": true
+	},
+	"parserOptions": {
+		"sourceType": "module",
+		"ecmaVersion": 6
+	},
+	"globals": {
+		"global": true,
+		"isProduction": true
+	},
+	"rules": {
+		"no-console": 0,
+		"no-unused-vars": 1,
+		"quotes": [
+			1,
+			"single"
+		],
+		"linebreak-style": [
+			1,
+			"unix"
+		],
+		"semi": [
+			1,
+			"always"
+		]
+	}
+}
