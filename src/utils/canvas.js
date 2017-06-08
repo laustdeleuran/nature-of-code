@@ -20,9 +20,10 @@ export default class Canvas {
 	 * @prop {HTMLElement} canvas
 	 * @prop {HTMLElement} container
 	 * @prop {bool} hasResize
+	 * @prop {function} resizeListener
 	 * @return {object} this - class instance
 	 */
-	constructor({ canvas = null, container = document.body, hasResize = true } = {}) {
+	constructor({ canvas = null, container = document.body, hasResize = true, resizeListener = null } = {}) {
 		canvas = canvas || Canvas.createCanvas(container);
 
 		this._vars = {
@@ -30,7 +31,8 @@ export default class Canvas {
 		};
 
 		this.settings = {
-			hasResize
+			hasResize,
+			resizeListener
 		};
 
 		this._setup();
@@ -50,9 +52,9 @@ export default class Canvas {
 		}
 
 		// Add resize listener
-		const { hasResize } = this.settings;
-		if (hasResize) {
-			const listener = () => this.resize();
+		const { hasResize, resizeListener } = this.settings;
+		if (hasResize || resizeListener) {
+			const listener = event => this.resize(event);
 			bindResizeEvents(listener);
 			this._vars.resizeListener = listener;
 		}
@@ -65,7 +67,7 @@ export default class Canvas {
 	 * Resize canvas to fit to screen
 	 * @return {object} size
 	 */
-	resize() {
+	resize(event) {
 		const { canvas } = this._vars;
 
 		if (!canvas) {
@@ -75,6 +77,11 @@ export default class Canvas {
 		const size = getWindowSize();
 		canvas.width = size.width;
 		canvas.height = size.height;
+
+		const { resizeListener } = this.settings;
+		if (resizeListener) {
+			resizeListener(event, this);
+		}
 
 		return size;
 	}
