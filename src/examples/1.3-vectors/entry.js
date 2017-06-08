@@ -1,7 +1,18 @@
+import Label from '../../utils/label';
 import Canvas from '../../utils/canvas';
 import Vector from '../../utils/vector';
 
 import '../base.scss';
+
+
+
+/**
+ * Project label
+ */
+new Label({
+	title: 'Vectors - try moving your pointer(s) around',
+	desc: '1.3 - Nature of Code'
+});
 
 
 /**

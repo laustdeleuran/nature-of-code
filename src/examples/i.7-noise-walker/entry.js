@@ -1,9 +1,21 @@
+import Label from '../../utils/label';
 import Canvas from '../../utils/canvas';
 import Animator from '../../utils/animator';
 import convertRange from '../../utils/convert-range';
 import PerlinNoise from '../../utils/perlin-noise';
 
 import '../base.scss';
+
+
+
+/**
+ * Project label
+ */
+new Label({
+	title: 'Perlin walker',
+	desc: 'I.7 - Nature of Code'
+});
+
 
 
 /**

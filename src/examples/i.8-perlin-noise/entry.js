@@ -1,7 +1,19 @@
+import Label from '../../utils/label';
 import Canvas from '../../utils/canvas';
 import PerlinNoise from '../../utils/perlin-noise';
 
 import '../base.scss';
+
+
+
+/**
+ * Project label
+ */
+new Label({
+	title: 'Perlin noise',
+	desc: 'I.8 - Nature of Code'
+});
+
 
 
 /**

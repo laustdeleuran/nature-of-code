@@ -15,15 +15,28 @@ canvas {
 	height: 100vh;
 }
 
+h1,
+p {
+  margin: 0;
+
+  position: absolute;
+  right: 0.5em;
+  left: 0.5em;
+
+  font-size: 1em;
+  line-height: 1.25em;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
 h1 {
-	margin: 0;
+  bottom: 0.5em;
 
-	position: absolute;
-	right: 10px;
-	bottom: 10px;
-	left: 10px;
+  font-weight: 700;
+}
 
-	font-size: 1em;
-	text-transform: uppercase;
-	letter-spacing: 0.15em;
+p {
+  bottom: 1.75em;
+
+  font-weight: 100;
 }

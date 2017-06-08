@@ -1,8 +1,19 @@
+import Label from '../../utils/label';
 import Canvas from '../../utils/canvas';
 import Animator from '../../utils/animator';
 import random from '../../utils/random';
 
 import '../base.scss';
+
+
+
+/**
+ * Project label
+ */
+new Label({
+	title: 'Random walker with tendency to walk right',
+	desc: 'I.3 - Nature of Code'
+});
 
 
 /**
