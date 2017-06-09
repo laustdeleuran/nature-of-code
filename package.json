@@ -4,7 +4,8 @@
   "description": "Various examples, experiments and utils that I've made as part of reading [The Nature of Code](http://natureofcode.com/).",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "rimraf build && webpack-dev-server --config webpack/config.babel.js --watch --progress"
+    "dev": "rimraf build && webpack-dev-server --config webpack/dev.babel.js --progress",
+    "build": "rimraf build && webpack --config webpack/prod.babel.js"
   },
   "repository": {
     "type": "git",
