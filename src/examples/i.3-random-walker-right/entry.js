@@ -3,7 +3,7 @@ import Canvas from '../../utils/canvas';
 import Animator from '../../utils/animator';
 import random from '../../utils/random';
 
-import '../base.scss';
+import '../examples.scss';
 
 
 
