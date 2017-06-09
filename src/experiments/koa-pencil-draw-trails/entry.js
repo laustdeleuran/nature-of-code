@@ -111,8 +111,7 @@ class Attractor {
 /**
  * Pointer listeners
  */
-let POINTER_TIMEOUT = 1000,
-	activePointer,
+let activePointer,
 	pointerTimer;
 const
 	getPointerEventPosition = event => {
@@ -129,14 +128,8 @@ const
 
 		return { x, y };
 	},
-	clearPointer = () => {
-		clearTimeout(pointerTimer);
-		activePointer = null;
-	},
 	pointerListener = event => {
 		activePointer = getPointerEventPosition(event);
-		clearTimeout(pointerTimer);
-		pointerTimer = setTimeout(clearPointer, POINTER_TIMEOUT);
 	};
 canvas.element.addEventListener('mousemove', pointerListener, { passive: true });
 canvas.element.addEventListener('touchmove', pointerListener, { passive: true });
@@ -173,6 +166,10 @@ animator.start(() => {
 	x -= vortex.x;
 	y -= vortex.y;
 
+	if (x < 1 && y < 1 && activePointer) {
+		activePointer = null;
+	}
+
 	vortex.applyForce(new Vector(x, y));
 
 	// attractor.display();
@@ -190,12 +187,12 @@ animator.start(() => {
 		point,
 		previousPoint,
 		color,
-    decay;
+		decay;
 	for (var i = 0; i < pointsLength; i++) {
 		point = points[i];
 		previousPoint = points[i - 1];
-    decay = 1 - i / pointsLength;
-    color = Math.round(LINE_COLOR[0] * decay) + ', ' + Math.round(LINE_COLOR[1] * decay) + ', ' + Math.round(LINE_COLOR[2] * decay);
+		decay = 1 - i / pointsLength;
+		color = Math.round(LINE_COLOR[0] * decay) + ', ' + Math.round(LINE_COLOR[1] * decay) + ', ' + Math.round(LINE_COLOR[2] * decay);
 
 		// Draw line between points
 		if (previousPoint) {
