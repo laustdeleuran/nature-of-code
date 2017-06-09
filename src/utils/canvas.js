@@ -190,4 +190,19 @@ export default class Canvas {
 
 		return canvas.height = value;
 	}
+
+	/**
+	 * Set resizeListener
+	 * @param {function} value
+	 */
+	set resizeListener(value) {
+		const { canvas } = this._vars;
+
+		if (!canvas) {
+			throw Error('Canvas.height - Trying to set height with no canvas available.');
+		}
+
+		this._vars.resizeListener = value;
+		this.resize();
+	}
 }
