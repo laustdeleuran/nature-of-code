@@ -2,6 +2,7 @@ import Label from '../../utils/label';
 import convertRange from '../../utils/convert-range';
 import Canvas from '../../utils/canvas';
 import Animator from '../../utils/animator';
+import Vector from '../../utils/vector';
 import PerlinNoise from '../../utils/perlin-noise';
 
 import '../experiments.scss';
@@ -18,38 +19,6 @@ new Label({
 });
 
 
-
-/**
- * Perlin noise walker
- */
-class Walker {
-	constructor (increment) {
-		increment = increment || 0.005;
-
-		this.increment = increment;
-		this.perlin = new PerlinNoise(6);
-		this.xOff = Math.round(1000 * Math.random());
-		this.yOff = Math.round(1000 * Math.random());
-
-		this.move();
-	}
-
-	move() {
-		const { x, y } = this;
-
-		this.x = convertRange(this.perlin.noise(this.xOff), 0, 1, 0, canvas.width);
-		this.y = convertRange(this.perlin.noise(this.yOff), 0, 1, 0, canvas.height);
-
-		this.xOff += this.increment;
-		this.yOff += this.increment;
-
-		if (Math.abs(this.x - x) > 0.9 || Math.abs(this.y - y) > 0.9) {
-			draw(this.x, this.y);
-		}
-	}
-}
-
-
 /**
  * Basic setup
  */
@@ -60,142 +29,178 @@ const animator = new Animator(),
 
 
 /**
- * Resize canvas
+ * Vortex moving around screen based on attractors (random walker or pointer movement)
  */
-function resizeCanvas() {
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
+class Vortex {
+	constructor(
+		x = Math.round(canvas.width * Math.random()),
+		y = Math.round(canvas.height * Math.random()),
+		mass = Math.round(15),
+		friction = 0.1
+	) {
+		this._position = new Vector(x, y);
+		this._velocity = new Vector(0, 0);
+		this._acceleration = new Vector(0, 0);
+		this._mass = mass;
+		this._friction = friction;
+	}
 
-	points = [];
-	clearCanvas(canvas.getContext());
-}
-canvas.resizeListener = resizeCanvas;
+	applyForce(vector) {
+		vector = vector.divide(this._mass);
+		this._acceleration.add(vector);
+	}
 
+	update() {
+		this._velocity.multiply(0.1); // Friction
 
+		this._velocity.add(this._acceleration);
+		this._position.add(this._velocity);
+		this._acceleration.multiply(0); // Reset acceleration
+	}
 
-/**
- * Settings and trackers
- */
-const
-	CONNECTOR_DISTANCE = 10000,
-	CONNECTOR_POINTS = 20,
-	LINE_COLOR = [170, 240, 174],
-	POINTS_MAX = 200,
-	walker = new Walker(),
-	WALKER_TIMEOUT = 5000;
-let
-	points = [],
-	walkerTimer;
+	display() {
+		const { x, y } = this._position;
+		context.beginPath();
+		context.arc(x, y, this._mass, 0, Math.PI * 2);
+		context.fill();
+	}
 
+	get x() {
+		return this._position.x;
+	}
 
-/**
- * Restart walker
- */
-function restartWalker() {
-	stopWalker();
-	walkerTimer = setTimeout(startWalker, WALKER_TIMEOUT);
-}
-
-/**
- * Stop walker
- */
-function stopWalker() {
-	clearTimeout(walkerTimer);
-	animator.stop();
-}
-
-/**
- * Start walker
- */
-function startWalker() {
-	stopWalker();
-	animator.start(() => walker.move());
-}
-
-/**
- * Setup canvas
- */
-function setupCanvas() {
-	context.lineWidth = 1;
-	context.lineJoin = context.lineCap = 'round';
-
-	resizeCanvas();
-	initCanvas();
-	startWalker();
-}
-
-/**
- * Clear canvas
- */
-function clearCanvas() {
-	context.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-/**
- * Init canvas
- */
-function initCanvas() {
-	if (canvas) {
-
-		canvas.element.addEventListener('mousemove', function(event) {
-			restartWalker();
-			draw(event.clientX, event.clientY);
-		}, { passive: true });
-
-		canvas.element.addEventListener('touchmove', function(event) {
-			restartWalker();
-			var touch = event.touches && event.touches[0],
-				x = touch ? touch.clientX : event.clientX,
-				y = touch ? touch.clientY : event.clientY;
-			draw(x, y);
-		}, { passive: true });
-
+	get y() {
+		return this._position.y;
 	}
 }
 
-setupCanvas();
+
+
+/**
+ * Perlin noise walker
+ */
+class Attractor {
+	constructor (increment) {
+		increment = increment || 0.025;
+
+		this.increment = increment;
+		this.perlin = new PerlinNoise(2);
+		this.xOff = Math.round(1000 * Math.random());
+		this.yOff = Math.round(1000 * Math.random());
+
+		this.update();
+	}
+
+	update() {
+		this.x = convertRange(this.perlin.noise(this.xOff), 0, 1, 0, canvas.width);
+		this.y = convertRange(this.perlin.noise(this.yOff), 0, 1, 0, canvas.height);
+
+		this.xOff += this.increment;
+		this.yOff += this.increment;
+	}
+
+	display() {
+		context.beginPath();
+		context.arc(this.x, this.y, 50, 0, Math.PI * 2);
+		context.fill();
+	}
+}
 
 
 
 /**
- * Move listener
- * @param {number} x - x coordinate
- * @param {number} y - y coordinate
+ * Pointer listeners
  */
-function draw(x, y) {
-	// Push new point
-	var latestPoint = {
-		x: x,
-		y: y
-	};
-	points.push(latestPoint);
+let POINTER_TIMEOUT = 1000,
+	activePointer,
+	pointerTimer;
+const
+	getPointerEventPosition = event => {
+		let x, y;
 
-	// Remove "old" points
+		// Get pointer position from event
+		if (event.touches && event.touches[0]) {
+			x = event.touches[0].clientX;
+			y = event.touches[0].clientY;
+		} else {
+			x = event.clientX;
+			y = event.clientY;
+		}
+
+		return { x, y };
+	},
+	clearPointer = () => {
+		clearTimeout(pointerTimer);
+		activePointer = null;
+	},
+	pointerListener = event => {
+		activePointer = getPointerEventPosition(event);
+		clearTimeout(pointerTimer);
+		pointerTimer = setTimeout(clearPointer, POINTER_TIMEOUT);
+	};
+canvas.element.addEventListener('mousemove', pointerListener, { passive: true });
+canvas.element.addEventListener('touchmove', pointerListener, { passive: true });
+
+
+/**
+ * Draw
+ */
+const attractor = new Attractor(),
+	vortex = new Vortex(),
+	points = [],
+	POINTS_MAX = 200,
+	LINE_COLOR = [170, 240, 174],
+	CONNECTOR_DISTANCE = 10000,
+	CONNECTOR_POINTS = 20;
+
+context.fillStyle = 'rgba(0, 0, 0, 0.125)';
+
+animator.start(() => {
+	// Clear canvas
+	context.clearRect(0, 0, canvas.width, canvas.height);
+
+	// Get attractor
+	let x, y;
+	if (activePointer) {
+		x = activePointer.x;
+		y = activePointer.y;
+	} else {
+		attractor.update();
+		x = attractor.x;
+		y = attractor.y;
+	}
+
+	x -= vortex.x;
+	y -= vortex.y;
+
+	vortex.applyForce(new Vector(x, y));
+
+	attractor.display();
+
+	vortex.update();
+	vortex.display();
+
+	// Create point trail
+	points.push({ x: vortex.x, y: vortex.y });
 	if (points.length > POINTS_MAX) {
 		points.shift();
 	}
 
-	// Clear canvas
-	clearCanvas();
-	let actions = 0;
-
-	// Draw points
 	var pointsLength = points.length,
 		point,
 		previousPoint,
 		color,
-		decay;
+    decay;
 	for (var i = 0; i < pointsLength; i++) {
 		point = points[i];
 		previousPoint = points[i - 1];
-		decay = 1 - i / pointsLength;
-		color = Math.round(LINE_COLOR[0] * decay) + ', ' + Math.round(LINE_COLOR[1] * decay) + ', ' + Math.round(LINE_COLOR[2] * decay);
+    decay = 1 - i / pointsLength;
+    color = Math.round(LINE_COLOR[0] * decay) + ', ' + Math.round(LINE_COLOR[1] * decay) + ', ' + Math.round(LINE_COLOR[2] * decay);
 
-			actions++;
 		// Draw line between points
 		if (previousPoint) {
-			context.beginPath();
 			context.strokeStyle = 'rgba(' + color + ', ' + decay + ')';
+			context.beginPath();
 			context.moveTo(previousPoint.x, previousPoint.y);
 			context.lineTo(point.x, point.y);
 			context.stroke();
@@ -207,7 +212,6 @@ function draw(x, y) {
 				var dx = point.x - previousPoint.x,
 					dy = point.y - previousPoint.y,
 					d = dx * dx + dy * dy;
-					actions++;
 
 				if (d < CONNECTOR_DISTANCE) {
 					context.beginPath();
@@ -219,5 +223,4 @@ function draw(x, y) {
 			}
 		}
 	}
-	console.log(actions);
-}
+});
