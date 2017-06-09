@@ -24,6 +24,8 @@ export const paths = {
 	dest: path.resolve(__dirname + '/../build')
 };
 
+
+
 /**
  * Host settings
  */
@@ -33,6 +35,8 @@ const host = {
 	protocol: 'http'
 };
 host.url = host.protocol + '://' + host.name + ':' + host.port;
+
+
 
 /**
  * Modules to include in all entries
@@ -46,6 +50,8 @@ const alwaysInclude = [
 	// only- means to only hot reload for successful updates
 	'webpack/hot/only-dev-server'
 ];
+
+
 
 /**
  * Entries
@@ -144,7 +150,7 @@ export default {
 		// Shows a progress bar when building
 		new ProgressBarPlugin(),
 
-		// Takes our HTML file and sticks things in it, like the bundle
+		// Create N HTML files, for each entry
 		...(() => {
 			const files = [];
 
