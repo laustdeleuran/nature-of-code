@@ -5,6 +5,7 @@
 /**
  * 	Imports
  */
+import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
 
@@ -164,6 +165,48 @@ export default {
 				'NODE_ENV': JSON.stringify('development')
 			}
 		}),
+
+		// Create index file of all entries
+		{
+			apply(compiler) {
+				compiler.plugin('done', function () {
+					const dir = paths.dest + '/',
+						file = dir + 'index.html';
+
+					// Make directory if it doesn't exist
+					if (!fs.existsSync(dir)) {
+						fs.mkdirSync(dir);
+					}
+
+					// Delete file if it already exists
+					if (fs.existsSync(file)) {
+						fs.unlinkSync(file);
+					}
+
+					// Create new index.html
+					fs.writeFileSync(file,
+						`<!DOCTYPE html>
+						<html>
+							<head>
+								<meta charset="UTF-8">
+								<title>Index</title>
+							</head>
+							<body>
+								<h1>Index</h1>
+								<ul>
+								${(() => {
+									let items = [];
+									for (let key in entries) {
+										items.push(`<li><a href="${key}">${key}</a></li>`);
+									}
+									return items.join('');
+								})()}
+								</ul>
+						</html>`
+					);
+				});
+			}
+		},
 
 		// Opens the browser with the url webpack-dev-server is running on
 		new OpenBrowserPlugin({
