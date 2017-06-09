@@ -111,8 +111,7 @@ class Attractor {
 /**
  * Pointer listeners
  */
-let activePointer,
-	pointerTimer;
+let activePointer;
 const
 	getPointerEventPosition = event => {
 		let x, y;
