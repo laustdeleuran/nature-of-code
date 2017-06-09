@@ -2,7 +2,7 @@ import Label from '../../utils/label';
 import Canvas from '../../utils/canvas';
 import PerlinNoise from '../../utils/perlin-noise';
 
-import '../base.scss';
+import '../examples.scss';
 
 
 

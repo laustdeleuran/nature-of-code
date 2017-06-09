@@ -2,7 +2,7 @@ import Label from '../../utils/label';
 import Canvas from '../../utils/canvas';
 import Vector from '../../utils/vector';
 
-import '../base.scss';
+import '../examples.scss';
 
 
 

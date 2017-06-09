@@ -4,7 +4,7 @@ import Animator from '../../utils/animator';
 import convertRange from '../../utils/convert-range';
 import PerlinNoise from '../../utils/perlin-noise';
 
-import '../base.scss';
+import '../examples.scss';
 
 
 
