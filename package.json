@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "rimraf build && webpack-dev-server --config webpack/dev.babel.js --progress",
     "build": "rimraf build && webpack --config webpack/prod.babel.js",
-    "start": "rimraf build && webpack --config webpack/prod.babel.js && http-server ./build --ssl"
+    "start": "npm run build && http-server ./build"
   },
   "repository": {
     "type": "git",
