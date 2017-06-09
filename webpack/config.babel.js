@@ -9,12 +9,10 @@ import fs from 'fs';
 import path from 'path';
 import glob from 'glob';
 
-import webpack from 'webpack';
-
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ProgressBarPlugin from 'progress-bar-webpack-plugin';
-import OpenBrowserPlugin from 'open-browser-webpack-plugin';
-// import createIndex from './webpack.create-index.babel';
+
+
 
 /**
  * Paths
@@ -29,7 +27,7 @@ export const paths = {
 /**
  * Host settings
  */
-const host = {
+export const host = {
 	name: 'localhost',
 	port: '3000',
 	protocol: 'http'
@@ -79,15 +77,6 @@ export default {
 		path: paths.dest,
 		filename: '[name].js',
 		publicPath: '/'
-	},
-
-	devtool: 'source-map',
-	devServer: {
-		contentBase: paths.dest,
-		hot: true,
-		inline: true,
-		port: host.port,
-		public: host.name + ':' + host.port
 	},
 
 	module: {
@@ -165,13 +154,6 @@ export default {
 			return files;
 		})(),
 
-		// set 'development' environment
-		new webpack.DefinePlugin({
-			'process.env': {
-				'NODE_ENV': JSON.stringify('development')
-			}
-		}),
-
 		// Create index file of all entries
 		{
 			apply(compiler) {
@@ -212,14 +194,6 @@ export default {
 					);
 				});
 			}
-		},
-
-		// Opens the browser with the url webpack-dev-server is running on
-		new OpenBrowserPlugin({
-			url: host.url
-		}),
-
-		// Adds hot module relacement
-		new webpack.HotModuleReplacementPlugin()
+		}
 	]
 };

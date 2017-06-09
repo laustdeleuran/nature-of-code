@@ -35,7 +35,7 @@ class Vortex {
 	constructor(
 		x = Math.round(canvas.width * Math.random()),
 		y = Math.round(canvas.height * Math.random()),
-		mass = 15,
+		mass = Math.round(15),
 		friction = 0.1
 	) {
 		this._position = new Vector(x, y);
@@ -51,7 +51,7 @@ class Vortex {
 	}
 
 	update() {
-		// this._velocity.multiply(0.1); // Friction
+		this._velocity.multiply(0.1); // Friction
 
 		this._velocity.add(this._acceleration);
 		this._position.add(this._velocity);
@@ -80,60 +80,29 @@ class Vortex {
  * Perlin noise walker
  */
 class Attractor {
-	constructor (increment = 0.0125, mass = 100, gravitationalForce = 0.4) {
-		this._increment = increment;
-		this._mass = mass;
-		this._gravitationalForce = gravitationalForce;
-		this._perlin = new PerlinNoise(6);
-		this._xOff = Math.round(1000 * Math.random());
-		this._yOff = Math.round(1000 * Math.random());
+	constructor (increment) {
+		increment = increment || 0.025;
+
+		this.increment = increment;
+		this.perlin = new PerlinNoise(2);
+		this.xOff = Math.round(1000 * Math.random());
+		this.yOff = Math.round(1000 * Math.random());
 
 		this.update();
 	}
 
 	update() {
-		this._position = new Vector(
-			convertRange(this._perlin.noise(this._xOff), 0, 1, 0, canvas.width),
-			convertRange(this._perlin.noise(this._yOff), 0, 1, 0, canvas.height)
-		);
+		this.x = convertRange(this.perlin.noise(this.xOff), 0, 1, 0, canvas.width);
+		this.y = convertRange(this.perlin.noise(this.yOff), 0, 1, 0, canvas.height);
 
-		this._xOff += this._increment;
-		this._yOff += this._increment;
+		this.xOff += this.increment;
+		this.yOff += this.increment;
 	}
 
 	display() {
 		context.beginPath();
 		context.arc(this.x, this.y, 50, 0, Math.PI * 2);
 		context.fill();
-	}
-
-	get x() {
-		return this._position.x;
-	}
-
-	get y() {
-		return this._position.y;
-	}
-
-	set x(value) {
-		return this._position.x = value;
-	}
-
-	set y(value) {
-		return this._position.y = value;
-	}
-
-	attract(vortex) {
-		let force = this._position.copy().subtract(vortex._position), // Calculate direction of force
-			distance = force.magnitude; // Distance between objects
-
-		distance = distance > 25 ? 25 : distance < 5 ? 5 : distance; // Avoid division by zero
-		force.normalize(); // Normalize vector (distance doesn't matter here, we just want this vector for direction
-
-		let strength = (this._gravitationalForce * this._mass * vortex._mass) / (distance * distance); // Calculate gravitional force magnitude
-		force.multiply(strength); // Get force vector --> magnitude * direction
-
-		return force;
 	}
 }
 
@@ -184,32 +153,32 @@ const attractor = new Attractor(),
 	CONNECTOR_DISTANCE = 10000,
 	CONNECTOR_POINTS = 20;
 
-context.fillStyle = 'rgba(0, 0, 0, 0.125)';
+context.fillStyle = 'rgba(0, 0, 0, 0.0625)';
 
 animator.start(() => {
 	// Clear canvas
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
 	// Get attractor
-	// let x, y;
+	let x, y;
 	if (activePointer) {
-		attractor.x = activePointer.x;
-		attractor.y = activePointer.y;
+		x = activePointer.x;
+		y = activePointer.y;
 	} else {
 		attractor.update();
+		x = attractor.x;
+		y = attractor.y;
 	}
 
-	// x = attractor.x;
-	// y = attractor.y;
-	// x -= vortex.x;
-	// y -= vortex.y;
+	x -= vortex.x;
+	y -= vortex.y;
 
-	vortex.applyForce(attractor.attract(vortex));
+	vortex.applyForce(new Vector(x, y));
 
-	attractor.display();
+	// attractor.display();
 
 	vortex.update();
-	vortex.display();
+	// vortex.display();
 
 	// Create point trail
 	points.push({ x: vortex.x, y: vortex.y });
@@ -221,12 +190,12 @@ animator.start(() => {
 		point,
 		previousPoint,
 		color,
-		decay;
+    decay;
 	for (var i = 0; i < pointsLength; i++) {
 		point = points[i];
 		previousPoint = points[i - 1];
-		decay = 1 - i / pointsLength;
-		color = Math.round(LINE_COLOR[0] * decay) + ', ' + Math.round(LINE_COLOR[1] * decay) + ', ' + Math.round(LINE_COLOR[2] * decay);
+    decay = 1 - i / pointsLength;
+    color = Math.round(LINE_COLOR[0] * decay) + ', ' + Math.round(LINE_COLOR[1] * decay) + ', ' + Math.round(LINE_COLOR[2] * decay);
 
 		// Draw line between points
 		if (previousPoint) {
@@ -244,7 +213,7 @@ animator.start(() => {
 					dy = point.y - previousPoint.y,
 					d = dx * dx + dy * dy;
 
-				if (d > CONNECTOR_DISTANCE) {
+				if (d < CONNECTOR_DISTANCE) {
 					context.beginPath();
 					context.strokeStyle = 'rgba(' + color + ', ' + t / i * 0.05 + ')';
 					context.moveTo(previousPoint.x, previousPoint.y);
