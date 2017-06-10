@@ -17,6 +17,7 @@ canvas {
 h1,
 p {
 	margin: 0;
+	overflow: hidden;
 
 	position: absolute;
 	right: 0.5em;
@@ -26,6 +27,7 @@ p {
 	line-height: 1.25em;
 	text-transform: uppercase;
 	letter-spacing: 0.15em;
+	white-space: nowrap;
 
 	pointer-events: none;
 }
