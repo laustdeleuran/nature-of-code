@@ -1,6 +1,6 @@
 {
   "name": "ljd-nature-of-code",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Various examples, experiments and utils that I've made as part of reading [The Nature of Code](http://natureofcode.com/).",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
