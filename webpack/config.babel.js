@@ -130,7 +130,8 @@ export default {
 
 			for (let key in entries) {
 				files.push(new HtmlWebpackPlugin({
-					title: key,
+					title: key.substr(0, key.length - '/index'.length),
+					template: paths.src + '/index.ejs',
 					filename: paths.dest + '/' + key + '.html',
 					chunks: [key]
 				}));
@@ -170,7 +171,8 @@ export default {
 								${(() => {
 									let items = [];
 									for (let key in entries) {
-										items.push(`<li><a href="${key}">${key}</a></li>`);
+										let path = key.substr(0, key.length - '/index'.length);
+										items.push(`<li><a href="${path}">${path}</a></li>`);
 									}
 									return items.join('');
 								})()}
