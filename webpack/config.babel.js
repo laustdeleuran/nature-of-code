@@ -37,21 +37,6 @@ host.url = host.protocol + '://' + host.name + ':' + host.port;
 
 
 /**
- * Modules to include in all entries
- */
-const alwaysInclude = [
-	// bundle the client for webpack-dev-server
-	// and connect to the provided endpoint
-	'webpack-dev-server/client?' + host.url,
-
-	// bundle the client for hot reloading
-	// only- means to only hot reload for successful updates
-	'webpack/hot/only-dev-server'
-];
-
-
-
-/**
  * Entries
  */
 export const entries = (() => {
@@ -60,7 +45,7 @@ export const entries = (() => {
 
 	files.forEach(file => {
 		let name = file.replace(paths.src, '').split('entry.')[0].replace('/', '');
-		entries[name + 'index'] = [ ...alwaysInclude, file ];
+		entries[name + 'index'] = [ file ];
 	});
 
 	return entries;
