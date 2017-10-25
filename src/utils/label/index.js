@@ -33,7 +33,6 @@ export default class Label {
 		const { title: titleValue, desc: descValue } = this._values;
 
 		// Update title
-		console.log(titleValue);
 		if (titleValue) {
 			this._container.appendChild(titleElement);
 		} else if (titleElement.parentNode) {

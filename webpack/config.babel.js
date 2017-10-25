@@ -29,7 +29,7 @@ export const paths = {
  */
 export const host = {
 	name: 'localhost',
-	port: '3000',
+	port: '1337',
 	protocol: 'http'
 };
 host.url = host.protocol + '://' + host.name + ':' + host.port;
