@@ -4,6 +4,7 @@ import log from '../../utils/log';
 import Animator from '../../utils/animator';
 import SimplexNoise from 'simplex-noise';
 import { bindResizeEvents, unBindResizeEvents } from '../../utils/resize';
+import dat from 'dat.gui/build/dat.gui.js';
 
 import '../experiments.scss';
 import './style.scss';
@@ -33,8 +34,7 @@ new Label({
  * Project markup
  */
 import addMarkup from './markup';
-const labels1 = addMarkup(['Raku', 'Valgfag', 'Rendyrket nydelse', 'DSDH', 'Den Skandinaviske Designhøjskole']);
-const labels2 = addMarkup(['Raku', 'Valgfag', 'Rendyrket nydelse', 'DSDH', 'Den Skandinaviske Designhøjskole']);
+const labels = addMarkup(['Raku', 'Valgfag', 'Rendyrket nydelse', 'DSDH', 'Den Skandinaviske Designhøjskole']);
 
 
 
@@ -82,11 +82,7 @@ class Scratch {
 	 * Constructor
 	 * @param {Element} element
 	 * @param {object} settings
-	 *   @prop {object} color
-	 *     @prop {number} r
-	 *     @prop {number} g
-	 *     @prop {number} b
-	 *     @prop {number} a
+	 *   @prop {string} color
 	 *   @prop {number} density
 	 *   @prop {object} increment - perlin increment
 	 *     @prop {number} x
@@ -99,7 +95,7 @@ class Scratch {
 	constructor(
 		element,
 		{
-			color = { r: 255, g: 89, b: 71, a: 0.9 },
+			color = 'rgba(255,89,71,0.9)',
 			density = 1.5,
 			increment = { x: DEFAULT_NOISE_INCREMENT, y: DEFAULT_NOISE_INCREMENT },
 			maxPoints = 75,
@@ -129,6 +125,7 @@ class Scratch {
 		const walker = new Walker(increment);
 		const points = [];
 
+		// Save settings
 		this._vars = {
 			animator,
 			canvas,
@@ -145,6 +142,7 @@ class Scratch {
 			walker,
 		};
 
+		// Place canvas
 		this._place();
 	}
 
@@ -184,13 +182,16 @@ class Scratch {
 	}
 
 	_animate = () => {
-		const { animator, canvas, maxPoints, points, squiggliness, walker } = this._vars;
+		const { animator, canvas, density, maxPoints, points, stroke, squiggliness, walker } = this._vars;
 
-		walker.update(canvas.width, canvas.height);
+		const realStrokeWidth = stroke * density,
+			halfRealStrokeWidth = realStrokeWidth / 2;
+
+		walker.update(canvas.width - realStrokeWidth, canvas.height - realStrokeWidth);
 		// walker.display(context);
 
 		if (points.length < maxPoints) {
-			points.push({ x: walker.x, y: walker.y });
+			points.push({ x: walker.x + halfRealStrokeWidth, y: walker.y + halfRealStrokeWidth });
 		} else if (squiggliness === 0) {
 			animator.stop();
 			return;
@@ -205,7 +206,7 @@ class Scratch {
 
 		context.lineJoin = 'round';
 		context.lineWidth = stroke * density;
-		context.strokeStyle = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + color.a + ')';
+		context.strokeStyle = color;
 		context.beginPath();
 
 		for (let i = 1; i < points.length; i++) {
@@ -253,11 +254,55 @@ class Scratch {
 /**
  * Init scratches!
  */
-const initScratches = squiggliness => element => {
-	const scratch = new Scratch(element, { padding: 5, squiggliness });
 
-	element.addEventListener('mouseenter', scratch.start);
-	element.addEventListener('mouseleave', scratch.stop);
+// Default settings
+let settings = {
+	color: 'rgba(255,89,71,0.9)',
+	density: 1.5,
+	increment: { x: 0.1, y: 0.1 },
+	maxPoints: 75,
+	padding: 5,
+	squiggliness: 0,
+	stroke: 5
 };
-labels1.forEach(initScratches(0));
-labels2.forEach(initScratches(5));
+
+let scratches = [];
+
+// Initialize scratches (reusable for dat.GUI hookup)
+const init = () => {
+
+	// Remove already initialized scrateches
+	if (scratches.length) {
+		scratches.forEach(scratch => {
+			scratch._vars.element.removeEventListener('mouseenter', scratch.start);
+			scratch._vars.element.removeEventListener('mouseleave', scratch.stop);
+			scratch.destroy();
+		});
+	}
+
+	scratches = [];
+
+	// Create new scratches with new settings
+	labels.forEach(element => {
+		const scratch = new Scratch(element, settings);
+
+		element.addEventListener('mouseenter', scratch.start);
+		element.addEventListener('mouseleave', scratch.stop);
+
+		scratches.push(scratch);
+	});
+};
+
+// Initial run
+init();
+
+// Set up dat.GUI
+const gui = new dat.GUI();
+gui.addColor(settings, 'color', 1, 2).onChange(init);
+gui.add(settings, 'density', 1, 2).name('canvasPixelDensity').onChange(init);
+gui.add(settings, 'maxPoints', 10, 200).onChange(init);
+gui.add(settings.increment, 'x', 0, 2).name('noiseIncrementX').onChange(init);
+gui.add(settings.increment, 'y', 0, 2).name('noiseIncrementY').onChange(init);
+gui.add(settings, 'padding', 0, 10).onChange(init);
+gui.add(settings, 'squiggliness', 0, 30).onChange(init);
+gui.add(settings, 'stroke', 0, 30).onChange(init);
