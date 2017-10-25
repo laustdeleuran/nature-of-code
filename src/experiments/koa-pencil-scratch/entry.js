@@ -38,7 +38,7 @@ const labels = addMarkup(['Raku', 'Valgfag', 'Rendyrket nydelse', 'DSDH', 'Den S
 
 
 /**
- * Perlin noise walker
+ * Noise walker
  */
 const simplex = new SimplexNoise();
 class Walker {
@@ -70,7 +70,7 @@ class Walker {
 /**
  * Default perlin increment
  */
-const DEFAULT_PERLIN_INCREMENT = 0.1;
+const DEFAULT_NOISE_INCREMENT = 0.1;
 
 /**
  * Scratch class
@@ -100,7 +100,7 @@ class Scratch {
 		{
 			color = { r: 255, g: 89, b: 71, a: 0.9 },
 			density = 1.5,
-			increment = { x: DEFAULT_PERLIN_INCREMENT, y: DEFAULT_PERLIN_INCREMENT },
+			increment = { x: DEFAULT_NOISE_INCREMENT, y: DEFAULT_NOISE_INCREMENT },
 			maxPoints = 75,
 			padding = 0,
 			squiggliness = 0,
