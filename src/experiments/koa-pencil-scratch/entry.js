@@ -33,7 +33,8 @@ new Label({
  * Project markup
  */
 import addMarkup from './markup';
-const labels = addMarkup(['Raku', 'Valgfag', 'Rendyrket nydelse', 'DSDH', 'Den Skandinaviske Designhøjskole']);
+const labels1 = addMarkup(['Raku', 'Valgfag', 'Rendyrket nydelse', 'DSDH', 'Den Skandinaviske Designhøjskole']);
+const labels2 = addMarkup(['Raku', 'Valgfag', 'Rendyrket nydelse', 'DSDH', 'Den Skandinaviske Designhøjskole']);
 
 
 
@@ -252,9 +253,11 @@ class Scratch {
 /**
  * Init scratches!
  */
-labels.forEach((element, index) => {
-	const scratch = new Scratch(element, { padding: 5, squiggliness: index });
+const initScratches = squiggliness => element => {
+	const scratch = new Scratch(element, { padding: 5, squiggliness });
 
 	element.addEventListener('mouseenter', scratch.start);
 	element.addEventListener('mouseleave', scratch.stop);
-});
+};
+labels1.forEach(initScratches(0));
+labels2.forEach(initScratches(5));
