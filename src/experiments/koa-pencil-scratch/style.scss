@@ -6,6 +6,10 @@ body {
   background: #fff;
 }
 
+html {
+	overflow: auto;
+}
+
 .markup {
 	padding: 20px;
 	overflow: hidden;

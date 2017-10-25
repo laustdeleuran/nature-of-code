@@ -90,9 +90,10 @@ class Scratch {
 	 *   @prop {object} increment - perlin increment
 	 *     @prop {number} x
 	 *     @prop {number} y
-	 *   @prop {number} padding
-	 *   @prop {number} stroke
 	 *   @prop {number} maxPoints
+	 *   @prop {number} padding
+	 *   @prop {number} squiggliness
+	 *   @prop {number} stroke
 	 */
 	constructor(
 		element,
@@ -100,8 +101,9 @@ class Scratch {
 			color = { r: 255, g: 89, b: 71, a: 0.9 },
 			density = 1.5,
 			increment = { x: DEFAULT_PERLIN_INCREMENT, y: DEFAULT_PERLIN_INCREMENT },
-			maxPoints = 200,
+			maxPoints = 75,
 			padding = 0,
+			squiggliness = 0,
 			stroke = 5,
 		} = {}
 	) {
@@ -137,6 +139,7 @@ class Scratch {
 			maxPoints,
 			padding,
 			points,
+			squiggliness,
 			stroke,
 			walker,
 		};
@@ -158,9 +161,10 @@ class Scratch {
 	_place = () => {
 		const { canvas, context, density, element, padding } = this._vars;
 		const rect = this._vars.rect = element.getBoundingClientRect();
+		const { pageXOffset, pageYOffset } = window;
 
-		canvas.style.top = (rect.y - padding) + 'px';
-		canvas.style.left = (rect.x - padding) + 'px';
+		canvas.style.top = (rect.y + pageYOffset - padding) + 'px';
+		canvas.style.left = (rect.x + pageXOffset - padding) + 'px';
 		const width = (rect.width + padding * 2);
 		canvas.width = width * density;
 		canvas.style.width = width + 'px';
@@ -179,13 +183,14 @@ class Scratch {
 	}
 
 	_animate = () => {
-		const { animator, canvas, maxPoints, points, walker } = this._vars;
+		const { animator, canvas, maxPoints, points, squiggliness, walker } = this._vars;
 
 		walker.update(canvas.width, canvas.height);
 		// walker.display(context);
 
-		points.push({ x: walker.x, y: walker.y });
-		if (points.length > maxPoints) {
+		if (points.length < maxPoints) {
+			points.push({ x: walker.x, y: walker.y });
+		} else if (squiggliness === 0) {
 			animator.stop();
 			return;
 		}
@@ -195,38 +200,36 @@ class Scratch {
 	}
 
 	_drawLine() {
-		const { color, context, density, points, stroke } = this._vars;
+		const { color, context, density, points, squiggliness, stroke } = this._vars;
 
 		context.lineJoin = 'round';
 		context.lineWidth = stroke * density;
 		context.strokeStyle = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + color.a + ')';
 		context.beginPath();
 
-		for (let i = 0; i < points.length; i++) {
+		for (let i = 1; i < points.length; i++) {
 			let point = points[i];
 
 			// Draw line between points
-			if (i > 1) {
-				if (i === 1) {
-					let previousPoint = points[i - 1];
-					context.moveTo(previousPoint.x, previousPoint.y);
-				}
-
-				context.lineTo(point.x, point.y);
+			if (i === 1) {
+				let previousPoint = points[i - 1];
+				context.moveTo(previousPoint.x + Math.random() * squiggliness, previousPoint.y + Math.random() * squiggliness);
 			}
+
+			context.lineTo(point.x + Math.random() * squiggliness, point.y + Math.random() * squiggliness);
 		}
 
 		context.stroke();
 	}
 
-	enter = () => {
+	start = () => {
 		const { animator } = this._vars;
 		this._vars.points = [];
 		animator.stop();
 		animator.start(this._animate);
 	};
 
-	exit = () => {
+	stop = () => {
 		const { animator } = this._vars;
 		animator.stop();
 		this._clearCanvas();
@@ -249,9 +252,9 @@ class Scratch {
 /**
  * Init scratches!
  */
-labels.forEach(element => {
-	const scratch = new Scratch(element, { padding: 5 });
+labels.forEach((element, index) => {
+	const scratch = new Scratch(element, { padding: 5, squiggliness: index });
 
-	element.addEventListener('mouseenter', scratch.enter);
-	element.addEventListener('mouseleave', scratch.exit);
+	element.addEventListener('mouseenter', scratch.start);
+	element.addEventListener('mouseleave', scratch.stop);
 });
