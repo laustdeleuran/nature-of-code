@@ -1,0 +1,37 @@
+html,
+body {
+	font-family: 'Helvetica', 'Arial';
+	color: #000;
+
+  background: #fff;
+}
+
+.markup {
+	padding: 20px;
+	overflow: hidden;
+}
+
+.label {
+	margin: 0 0 20px;
+	float: left;
+	clear: both;
+
+	font-size: 2vw;
+
+	cursor: pointer;
+}
+
+.scratch {
+	display: block;
+
+	position: absolute;
+	z-index: 2000;
+
+	// background: rgba(255, 0, 255, 0.5);
+
+	pointer-events: none;
+
+	.no-csspointerevents & {
+		display: none;
+	}
+}

@@ -19,10 +19,12 @@
   },
   "homepage": "https://github.com/laustdeleuran/nature-of-code#readme",
   "dependencies": {
+    "browsernizr": "^2.2.0",
     "captainslog": "^0.3.2",
     "lodash": "^4.17.4",
     "raf": "^3.3.2",
-    "res": "^0.4.0"
+    "res": "^0.4.0",
+    "simplex-noise": "^2.3.0"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
