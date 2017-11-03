@@ -1,5 +1,7 @@
 import raf from 'raf';
 
+import roundTo from './round-to';
+
 
 
 /**
@@ -15,34 +17,25 @@ const DEFAULT_STATE = {
  * Abstract spring animation
  */
 export default class Spring {
-
 	/**
 	 * @constructor
-	 */
-	constructor(settings, state) {
-		this._init(settings, state);
-	}
-
-	/**
-	 * Init
 	 * Set base settings for spring.
 	 * @param {object} settings
-	 * @property {function} callback - Callback to call each step
-	 * @property {number} acceleration - Stiffness / acceleration
-	 * @property {number} damper - Dampens velocity. should be between 0 and 1.
-	 * @property {number} margin - Determines target accuracy
+	 * @property {function} callback - callback to call each step
+	 * @property {number} acceleration - stiffness / acceleration
+	 * @property {number} friction
+	 * @property {number} decimals - Number of decimals
 	 * @param {object} state
-	 * @property {number} current - Current position
-	 * @property {number} target - Target position
-	 * @property {number} velocity - Velocity
+	 * @property {number} current - current position
+	 * @property {number} target - target position
+	 * @property {number} velocity - velocity
 	 */
-	_init({ callback, acceleration = 0.2, damper = 0.85, id, margin = 0.0001 } = {}, state = {}) {
+	constructor({ callback, acceleration = 0.2, friction = 0.15, decimals = 2 }, state = {}) {
 		this._settings = {
 			acceleration,
 			callback,
-			damper,
-			id,
-			margin
+			friction,
+			decimals
 		};
 
 		this._state = Object.assign({}, DEFAULT_STATE, state);
@@ -53,20 +46,22 @@ export default class Spring {
 	 * @private
 	 */
 	_step() {
-		const { acceleration, callback, damper, margin } = this._settings;
+		const { acceleration, callback, friction, decimals } = this._settings;
 		let { current, target, velocity } = this._state;
-
-		// If we've already reached the target, return without doing anything
-		if (Math.abs(target - current) < margin) {
-			this.stop();
-			return;
-		}
 
 		// Do math to animate
 		let distance = target - current;
-		velocity *= 1 - damper;
+		velocity *= friction;
 		velocity += distance * acceleration;
 		current += velocity;
+
+		// Round numbers
+		current = roundTo(current, decimals);
+		velocity = roundTo(velocity, decimals);
+		target = roundTo(target, decimals);
+
+		// If our velocity is dead, we've reached our target
+		current = velocity === 0 ? target : current;
 
 		// Update internal state
 		this._state = {
@@ -75,13 +70,18 @@ export default class Spring {
 			velocity
 		};
 
+		// Animation loop / iteration
+		if (target !== current) {
+			this._raf();
+		} else {
+			this.stop();
+		}
+
 		// Call callback if available
 		if (callback) {
 			callback({ ...this._state });
 		}
 
-		// Animation loop / iteration
-		this._raf();
 	}
 
 	/**
@@ -109,13 +109,9 @@ export default class Spring {
 	 * Reset Spring
 	 * @public
 	 */
-	reset(settings, state) {
+	reset() {
 		this.stop();
-
-		this._init({
-			...this._settings,
-			...settings
-		}, state);
+		this._state = { ...DEFAULT_STATE };
 
 		return this;
 	}
@@ -130,7 +126,7 @@ export default class Spring {
 	 */
 	forceState(state) {
 		this.stop();
-		this._state = Object.assign({}, DEFAULT_STATE, this._state, state);
+		this._state = Object.assign({}, DEFAULT_STATE, state);
 
 		return this;
 	}
@@ -150,16 +146,6 @@ export default class Spring {
 			target
 		};
 
-		this.start();
-
-		return this;
-	}
-
-	/**
-	 * Start spring
-	 * @public
-	 */
-	start() {
 		if (!this._isAnimating) {
 			this._raf();
 		}
