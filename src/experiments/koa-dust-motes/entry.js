@@ -265,6 +265,14 @@ class Pointer {
 	get position() {
 		return this._position;
 	}
+
+	/**
+	 * Destroy
+	 */
+	destroy() {
+		document.removeEventListener('touchmove', this.onMove);
+		document.removeEventListener('mousemove', this.onMove);
+	}
 }
 
 
