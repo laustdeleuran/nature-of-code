@@ -14,7 +14,7 @@ import './style.scss';
  * Project label
  */
 new Label({
-	title: 'Dust motes on skin color',
+	title: 'Dust motes on in the upside down',
 	desc: 'KOA - Dust motes'
 });
 
@@ -40,9 +40,9 @@ class Mote {
 	 */
 	constructor({
 		color = {
-			h: 19,
-			s: 18 * Math.random() + 30,
-			l: 25 * Math.random() + 70,
+			h: 195 + Math.random() * 10,
+			s: 40 + Math.random() * 10,
+			l: 10 + Math.random() * 30,
 			a: 0.5 * Math.random(),
 		},
 		radius = normalizedRandom(20, 10),
