@@ -1,0 +1,30 @@
+html,
+body {
+	background: #f0f fixed;
+	background-repeat: no-repeat;
+	background-image:
+		radial-gradient(#fff, rgba(#CEDAE8, 0) 50%),
+		linear-gradient(-45deg, #121117, #CEDAE8 80%);
+	background-size:
+		300% 300%,
+		100% 100%;
+	background-position:
+		left -150vw bottom -150vh,
+		center center;
+}
+
+body {
+	&::after {
+		content: '';
+
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+
+		background: url('./noise.png');
+
+		pointer-events: none;
+	}
+}
