@@ -2,6 +2,8 @@ import Animator from '../../utils/animator';
 import Canvas from '../../utils/canvas';
 import Label from '../../utils/label';
 import roundTo from '../../utils/round-to';
+import normalizedRandom from '../../utils/normalized-random';
+import { bindResizeEvents } from '../../utils/resize';
 
 import '../experiments.scss';
 import './style.scss';
@@ -23,27 +25,7 @@ new Label({
  */
 const animator = new Animator(),
 	canvas = new Canvas(),
-	context = canvas.getContext(),
-	particleCount = 700;
-
-
-
-/**
- * Normalized random
- * @source https://codepen.io/bionicoz/pen/xCIDH
- */
-const normalizedRandom = (mean, stdDev) =>
-	Math.abs(
-		Math.round(
-			(Math.random() * 2 - 1)
-			+
-			(Math.random() * 2 - 1)
-			+
-			(Math.random() * 2 - 1)
-		)
-		* stdDev
-	)
-	+ mean;
+	context = canvas.getContext();
 
 
 
@@ -63,11 +45,12 @@ class Mote {
 			l: 25 * Math.random() + 70,
 			a: 0.5 * Math.random(),
 		},
+		radius = normalizedRandom(20, 10),
+		scale = 0.5 + Math.random() * 1, // Scale between 0.5 and 1.5
+		rotation = Math.PI / 4 * Math.random(),
 		x,
 		y
 	} = {}) {
-		this._settings = { color };
-
 		// Create color strings
 		const { h, s, l, a } = color;
 		this._colors = {
@@ -76,9 +59,9 @@ class Mote {
 		};
 
 		// Set up size and rotation
-		this._radius = normalizedRandom(2, 4);
-		this._scale= 0.8 * Math.random() + 0.5; // Scale between 0.8 and 1.3
-		this._rotation = Math.PI / 4 * Math.random();
+		this._radius = radius;
+		this._scale = scale;
+		this._rotation = rotation;
 
 		// Set up position and direction
 		this._pos = { x, y };
@@ -278,12 +261,7 @@ class Pointer {
 
 
 // Init --------------------------------------------------------
-
-// Create particles
 let particles = [];
-for (let i = 0; i < particleCount; i++) {
-	particles.push(new Mote({ x: Math.random() * canvas.width, y: Math.random() * canvas.height }));
-}
 
 // Set canvas render mode
 context.globalCompositeOperation = 'lighter';
@@ -296,25 +274,43 @@ const pointer = new Pointer({
 	}
 });
 
-// Animation loop
-animator.start(() => {
-	const { width, height } = canvas;
+const init = () => {
+	animator.stop();
 
-	// Clear canvas
-	context.clearRect(0, 0, width, height);
+	// Create particles
+	const particleCount = Math.round(canvas.width * canvas.height / 3000);
+	particles = [];
+	for (let i = 0; i < particleCount; i++) {
+		particles.push(new Mote({
+			x: Math.random() * canvas.width,
+			y: Math.random() * canvas.height,
+		}));
+	}
 
-	// Update pointer position
-	pointer.update();
-	const { x: pointerX, y: pointerY } = pointer.position;
-	let
-		modX = (pointerX - width / 2) / -40,
-		modY = (pointerY - height / 2) / -40;
+	// Animation loop
+	animator.start(() => {
+		const { width, height } = canvas;
 
-	// Draw particles
-	particles.forEach(particle => {
-		particle.move();
-		particle.draw(context, { x: modX, y: modY });
-		particle.boundaryCheck(width, height);
+		// Clear canvas
+		context.clearRect(0, 0, width, height);
+
+		// Update pointer position
+		pointer.update();
+		const { x: pointerX, y: pointerY } = pointer.position;
+		let
+			modX = (pointerX - width / 2) / -40,
+			modY = (pointerY - height / 2) / -40;
+
+		// Draw particles
+		particles.forEach(particle => {
+			particle.move();
+			particle.draw(context, { x: modX, y: modY });
+			particle.boundaryCheck(width, height);
+		});
 	});
-});
+
+};
+
+bindResizeEvents(init);
+init();
 
