@@ -42,9 +42,9 @@ class Branch {
 	 */
 	constructor({
 		colors = {
-			shadow: '#000422',
-			primary: '#7CB6E3',
-			highlight: '#fff',
+			shadow: 'rgba(0, 4, 34, 0.33)',
+			primary: 'rgba(124, 182, 227, 0.33)',
+			highlight: 'rgba(255, 255, 255, 0.75)',
 		},
 		density = 0.5,
 		direction = {
@@ -110,30 +110,39 @@ class Branch {
 	}
 
 	_draw(context) {
-		const { age, color, density, points } = this._vars;
-		const { shadow, primary, highlight } = this._vars;
+		const { age, colors, density } = this._vars;
+		const { shadow, primary, highlight } = colors;
+
+		// const width = density * (age / 5 + 0.5);
+		const width = 1;
+
+		// this._drawStroke(shadow, width, { x: - width, y: - width }, context);
+		this._drawStroke(primary, 2, { x: 0, y: 0 }, context);
+		this._drawStroke(highlight, 1, { x: 1, y: 1 }, context);
 
 	}
 
-	_drawStroke(color, context) {
-		const { age, points, density } = this._vars;
+	_drawStroke(color, width, { x, y }, context) {
+		const { points } = this._vars;
+
 		context.beginPath();
 		context.strokeStyle = color;
 
 		for (let i = 1; i < points.length; i++) {
 			let point = points[i];
 
-			context.lineWidth = density * (age / 5 + 1);
+			context.lineWidth = width;
 
 			// Draw line between points
 			if (i === 1) {
 				let previousPoint = points[i - 1];
-				context.moveTo(previousPoint.x, previousPoint.y);
+				context.moveTo(previousPoint.x + x, previousPoint.y + y);
 			}
 
-			context.lineTo(point.x, point.y);
-			context.stroke();
+			context.lineTo(point.x + x, point.y + y);
 		}
+
+		context.stroke();
 	}
 
 	_end() {
@@ -185,10 +194,9 @@ class Branch {
 // Init --------------------------------------------------------
 
 // Set canvas render mode
-// context.globalCompositeOperation = 'lighter';
+context.globalCompositeOperation = 'lighter';
 
 context.lineJoin = 'round';
-context.beginPath();
 
 // Set event listener
 const element = canvas.element;
