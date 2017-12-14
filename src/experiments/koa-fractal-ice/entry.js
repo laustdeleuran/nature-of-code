@@ -41,7 +41,11 @@ class Branch {
 	 * @constructor
 	 */
 	constructor({
-		color = '#fff',
+		colors = {
+			shadow: '#000422',
+			primary: '#7CB6E3',
+			highlight: '#fff',
+		},
 		density = 0.5,
 		direction = {
 			x: roundTo(-1 + Math.random() * 2, 4),
@@ -58,7 +62,7 @@ class Branch {
 	}) {
 		this._vars = {
 			age: 0,
-			color: color,
+			colors: colors,
 			density: density,
 			direction: {
 				...direction,
@@ -107,8 +111,12 @@ class Branch {
 
 	_draw(context) {
 		const { age, color, density, points } = this._vars;
-		console.log(age);
+		const { shadow, primary, highlight } = this._vars;
 
+	}
+
+	_drawStroke(color, context) {
+		const { age, points, density } = this._vars;
 		context.beginPath();
 		context.strokeStyle = color;
 
@@ -126,10 +134,6 @@ class Branch {
 			context.lineTo(point.x, point.y);
 			context.stroke();
 		}
-	}
-
-	_drawStroke(context, color, density) {
-
 	}
 
 	_end() {
@@ -163,11 +167,11 @@ class Branch {
 			position.x < 0 ||
 			position.y > canvas.height ||
 			position.y < 0 ||
-			branches && (branches.length === 0 || branches.every(branch => branch._vars.ended));
+			branches;
 		if (!ended) this._vars.age++;
 
 		// Bail out if we're totally done or we have sub branches
-		if (ended || branches) return;
+		else return;
 
 		// Move and maybe split?
 		this._move(width, height);
