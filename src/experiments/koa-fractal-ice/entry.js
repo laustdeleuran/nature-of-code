@@ -41,15 +41,19 @@ class Comet {
 	 * @constructor
 	 */
 	constructor({
-		colors = {
-			shadow: 'rgba(0, 4, 34, 0.33)',
-			primary: 'rgba(124, 182, 227, 0.33)',
-			highlight: 'rgba(255, 255, 255, 0.75)',
+		lifespan = Infinity,
+		color = {
+			r: 236,
+			g: 248,
+			b: 255,
 		},
 	} = {}) {
 		this._vars = {
-			colors: colors,
-			increment: 0.005,
+			age: 0,
+			color,
+			increment: 0.0025,
+			minSpeed: 2,
+			lifespan,
 			offset: {
 				x: Math.round(1000 * Math.random()),
 				y: Math.round(1000 * Math.random()),
@@ -60,16 +64,34 @@ class Comet {
 	}
 
 	_move(width, height) {
-		const { increment, length, offset } = this._vars;
+		const { age, increment, length, lifespan, minSpeed, offset, speed: lastSpeed, position } = this._vars;
 		const { x: offsetX, y: offsetY } = offset;
 
-		this._vars.position.push({
+		const point = {
 			x: convertRange(simplex.noise2D(offsetX, 0), -1, 1, 0, width),
 			y: convertRange(simplex.noise2D(offsetY, 0), -1, 1, 0, height)
-		});
+		};
 
-		if (length < this._vars.position.length) this._vars.position.shift();
+		const lastPoint = position[position.length - 2];
+		const speed = lastPoint ? Math.abs(point.x - lastPoint.x) + Math.abs(point.y - lastPoint.y) : 0 ;
 
+		if (speed && speed < minSpeed) this._vars.isStopping = true;
+
+		if (
+			age > lifespan ||
+			this._vars.isStopping &&
+				(
+					speed > lastSpeed
+				)
+		) {
+			return this._stop();
+		}
+
+		position.push(point);
+		if (length < position.length) position.shift();
+
+		this._vars.speed = speed;
+		this._vars.age++;
 		this._vars.offset = {
 			x: offsetX + increment,
 			y: offsetY + increment,
@@ -77,19 +99,23 @@ class Comet {
 	}
 
 	_draw(context) {
-		const { position } = this._vars;
+		const { color, position, length } = this._vars;
 
 		position.forEach(({ x, y }, index) => {
 			if (index === 0) return;
 
 			const prev = position[index - 1];
-			const decay = index / position.length;
+			const decay = index / length;
 			context.beginPath();
 			context.moveTo(prev.x, prev.y);
-			context.strokeStyle = 'rgba(236, 248, 255, ' + decay + ')';
+			context.strokeStyle = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + decay + ')';
 			context.lineTo(x, y);
 			context.stroke();
 		});
+	}
+
+	_stop() {
+		this._vars.isStopped = true;
 	}
 
 	update(context, width, height) {
