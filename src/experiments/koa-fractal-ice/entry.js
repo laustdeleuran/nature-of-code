@@ -42,34 +42,37 @@ class Comet {
 	 */
 	constructor({
 		lifespan = Infinity,
+		y = 0,
 		color = {
 			r: 236,
 			g: 248,
 			b: 255,
+		},
+		offset = {
+			x: Math.round(1000 * Math.random()),
+			y: Math.round(1000 * Math.random()),
 		},
 	} = {}) {
 		this._vars = {
 			age: 0,
 			color,
 			increment: 0.0025,
-			minSpeed: 2,
+			minSpeed: 0, //2,
 			lifespan,
-			offset: {
-				x: Math.round(1000 * Math.random()),
-				y: Math.round(1000 * Math.random()),
-			},
+			offset,
 			position: [],
 			length: 50,
+			y,
 		};
 	}
 
 	_move(width, height) {
-		const { age, increment, length, lifespan, minSpeed, offset, speed: lastSpeed, position } = this._vars;
+		const { age, increment, length, lifespan, minSpeed, offset, speed: lastSpeed, position, y } = this._vars;
 		const { x: offsetX, y: offsetY } = offset;
 
 		const point = {
-			x: convertRange(simplex.noise2D(offsetX, 0), -1, 1, 0, width),
-			y: convertRange(simplex.noise2D(offsetY, 0), -1, 1, 0, height)
+			x: convertRange(simplex.noise2D(offsetX, y), -1, 1, 0, width),
+			y: convertRange(simplex.noise2D(offsetY, y), -1, 1, 0, height)
 		};
 
 		const lastPoint = position[position.length - 2];
@@ -143,14 +146,21 @@ const init = () => {
 
 	// Set up comets
 	let comets = [];
-	for (let i = 0; i < 1; i++) { // Math.round(width * height / 30000)
-		comets.push(new Comet());
+	const offset = {
+			x: Math.round(1000 * Math.random()),
+			y: Math.round(1000 * Math.random()),
+		};
+	for (let i = 0; i < 20; i++) { // Math.round(width * height / 30000)
+		comets.push(new Comet({
+			offset,
+			y: i / 100
+		}));
 	}
 
 	animator.start(() => {
 		context.clearRect(0, 0, width, height);
 
-		comets.forEach(particle => particle.update(context, width, height));
+		comets.forEach(comet => comet.update(context, width, height));
 	});
 };
 init();
