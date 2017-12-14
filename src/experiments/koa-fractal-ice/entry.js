@@ -25,7 +25,7 @@ new Label({
 /**
  * Basic setup
  */
-const animator = new Animator(),
+const
 	canvas = new Canvas(),
 	context = canvas.getContext(),
 	simplex = new SimplexNoise();
@@ -41,38 +41,58 @@ class Comet {
 	 * @constructor
 	 */
 	constructor({
-		lifespan = Infinity,
-		y = 0,
+		canvas,
+		context,
+		init,
+		canSplit = true,
 		color = {
 			r: 236,
 			g: 248,
 			b: 255,
 		},
+		lifespan = Infinity,
 		offset = {
-			x: Math.round(1000 * Math.random()),
-			y: Math.round(1000 * Math.random()),
+			x: {
+				value: Math.round(1000 * Math.random()),
+				offset: 0,
+			},
+			y: {
+				value: Math.round(1000 * Math.random()),
+				offset: 0,
+			},
 		},
 	} = {}) {
 		this._vars = {
 			age: 0,
+			animator: new Animator(),
+			canSplit,
+			canvas,
+			children: [],
 			color,
+			context,
 			increment: 0.0025,
-			minSpeed: 0, //2,
+			init,
+			length: 50,
 			lifespan,
+			minSpeed: 0,
 			offset,
 			position: [],
-			length: 50,
-			y,
 		};
+
+		this._vars.animator.start(() => {
+			if (typeof init === 'function') init();
+
+			this.update();
+		});
 	}
 
-	_move(width, height) {
-		const { age, increment, length, lifespan, minSpeed, offset, speed: lastSpeed, position, y } = this._vars;
+	_move() {
+		const { age, canvas, increment, length, lifespan, minSpeed, offset, speed: lastSpeed, position } = this._vars;
 		const { x: offsetX, y: offsetY } = offset;
 
 		const point = {
-			x: convertRange(simplex.noise2D(offsetX, y), -1, 1, 0, width),
-			y: convertRange(simplex.noise2D(offsetY, y), -1, 1, 0, height)
+			x: convertRange(simplex.noise2D(offsetX.value, offsetX.offset), -1, 1, 0, canvas.width),
+			y: convertRange(simplex.noise2D(offsetY.value, offsetY.offset), -1, 1, 0, canvas.height)
 		};
 
 		const lastPoint = position[position.length - 2];
@@ -87,7 +107,7 @@ class Comet {
 					speed > lastSpeed
 				)
 		) {
-			return this._stop();
+			this._stop();
 		}
 
 		position.push(point);
@@ -96,13 +116,19 @@ class Comet {
 		this._vars.speed = speed;
 		this._vars.age++;
 		this._vars.offset = {
-			x: offsetX + increment,
-			y: offsetY + increment,
+			x: {
+				value: offsetX.value + increment,
+				offset: offsetX.offset,
+			},
+			y: {
+				value: offsetY.value + increment,
+				offset: offsetY.offset,
+			},
 		};
 	}
 
-	_draw(context) {
-		const { color, position, length } = this._vars;
+	_draw() {
+		const { color, context, position, length } = this._vars;
 
 		position.forEach(({ x, y }, index) => {
 			if (index === 0) return;
@@ -118,12 +144,31 @@ class Comet {
 	}
 
 	_stop() {
+		this._vars.animator.stop();
 		this._vars.isStopped = true;
 	}
 
-	update(context, width, height) {
-		this._move(width, height);
-		this._draw(context);
+	_split() {
+		const { age, canvas, context, children, offset } = this._vars;
+
+		children.push(new Comet({
+			canvas,
+			context,
+			canSplit: false,
+			lifespan: 50,
+			offset: {
+				x: { value: offset.x.value, offset: offset.x.offset + 0.001 * age },
+				y: { value: offset.y.value, offset: offset.y.offset - 0.001 * age },
+			}
+		}));
+	}
+
+	update() {
+		// console.log(this._vars.position[this._vars.position.length - 1]);
+		if (!this._vars.isStopped) this._move();
+		if (this._vars.canSplit && !this._vars.isStopped && Math.round(Math.random())) this._split();
+
+		this._draw();
 	}
 
 }
@@ -137,30 +182,6 @@ class Comet {
 
 context.lineJoin = 'round';
 
-const init = () => {
-	const { width, height } = canvas;
-
-	// Clear any old animations
-	context.clearRect(0, 0, width, height);
-	animator.stop();
-
-	// Set up comets
-	let comets = [];
-	const offset = {
-			x: Math.round(1000 * Math.random()),
-			y: Math.round(1000 * Math.random()),
-		};
-	for (let i = 0; i < 20; i++) { // Math.round(width * height / 30000)
-		comets.push(new Comet({
-			offset,
-			y: i / 100
-		}));
-	}
-
-	animator.start(() => {
-		context.clearRect(0, 0, width, height);
-
-		comets.forEach(comet => comet.update(context, width, height));
-	});
-};
-init();
+window.comet = new Comet({
+	canvas, context, init: () => context.clearRect(0, 0, canvas.width, canvas.height)
+});
