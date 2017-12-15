@@ -3,3 +3,19 @@ body {
   background: #254558;
 	background: #254558 linear-gradient(#09131A, #3B6F89) fixed
 }
+
+body {
+	&::after {
+		content: '';
+
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+
+		background: url('./noise.png');
+
+		pointer-events: none;
+	}
+}
