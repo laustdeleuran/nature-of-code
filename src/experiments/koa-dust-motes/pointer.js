@@ -2,6 +2,14 @@ import roundTo from '../../utils/round-to';
 
 
 
+const DEFAULT_POSITION= {
+	x: 0,
+	y: 0,
+};
+
+
+
+
 /**
  * Pointer tracking
  */
@@ -10,7 +18,7 @@ export default class Pointer {
 	/**
 	 * @constructor
 	 */
-	constructor({ acceleration = 0.0125, friction = 0.15, decimals = 2, position } = {}) {
+	constructor({ acceleration = 0.0125, friction = 0.15, decimals = 2, position = DEFAULT_POSITION } = {}) {
 		this._settings = { acceleration, friction, decimals };
 
 		this._position = position;
