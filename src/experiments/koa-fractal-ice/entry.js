@@ -3,7 +3,7 @@ import Canvas from '../../utils/canvas';
 import Label from '../../utils/label';
 import SimplexNoise from 'simplex-noise';
 import convertRange from '../../utils/convert-range';
-import roundTo from '../../utils/round-to';
+// import roundTo from '../../utils/round-to';
 // import normalizedRandom from '../../utils/normalized-random';
 // import { bindResizeEvents } from '../../utils/resize';
 

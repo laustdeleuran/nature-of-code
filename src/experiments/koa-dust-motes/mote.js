@@ -29,7 +29,7 @@ export default class Mote {
 		const { h, s, l, a } = color;
 		this._colors = {
 			primary: 'hsla(' + h + ',' + s + '%,' + l + '%,'  + roundTo(a) + ')',
-			shadow: 'hsla(' + h + ',' + s + '%,' + l + '%,'  + roundTo(a - 0.55) + ')'
+			shadow: 'hsla(' + h + ',' + s + '%,' + l + '%,'  + 0 + ')'
 		};
 
 		// Set up size and rotation

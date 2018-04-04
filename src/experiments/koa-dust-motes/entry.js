@@ -37,7 +37,7 @@ const animator = new Animator(),
 let particles = [];
 
 // Set canvas render mode
-context.globalCompositeOperation = 'lighter';
+// context.globalCompositeOperation = 'lighter';
 
 // Set up mouse tracking
 const pointer = new Pointer({

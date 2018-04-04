@@ -4,7 +4,7 @@ import log from '../../utils/log';
 import Animator from '../../utils/animator';
 import SimplexNoise from 'simplex-noise';
 import { bindResizeEvents, unBindResizeEvents } from '../../utils/resize';
-import dat from 'dat.gui/build/dat.gui.js';
+import dat from 'dat-gui';
 
 import '../experiments.scss';
 import './style.scss';
