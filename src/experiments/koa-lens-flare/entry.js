@@ -37,7 +37,8 @@ const
  */
 const
 	colorPurple = Color('#b289ad'),
-	colorPink = Color('#fdebe2');
+	colorPink = Color('#fdebe2'),
+	baseRadius = 128;
 
 
 
@@ -49,27 +50,53 @@ function circle(x, y, radius, fill) {
 	context.arc(x, y, radius, 0, 2 * Math.PI);
 	context.fillStyle = fill;
 	context.fill();
-	// context.stroke();
 }
 
-const getLens = (dist, scale, size, px, py, cx, cy) => ({
-	radius: roundTo(size * scale, 2),
-	x: roundTo((cx - px) / dist + cx, 2),
-	y: roundTo((cy - py) / dist + cy, 2),
+const getLensPosition = (distance, pointerX, pointerY, centerX, centerY) => ({
+	x: roundTo((centerX - pointerX) / distance + centerX, 2),
+	y: roundTo((centerY - pointerY) / distance + centerY, 2),
 });
 
-function createGradient(x, y, radius, color) {
+const createSpotGradient = (x, y, radius, color) => {
 	// We need the second circle to be slightly offset from the first to avoid this bug:
 	// https://stackoverflow.com/questions/49640841/canvas-createradialgradient-not-working-as-expected-in-chrome-v65
-	let gradient = context.createRadialGradient(x, y, radius, x * 1.0001, y, radius * 0.8);
+	const gradient = context.createRadialGradient(x, y, radius, x + 0.001, y, radius > 20 ? radius * 0.8 : radius * 0.25);
 	gradient.addColorStop(1, color.rgb());
-	gradient.addColorStop(0.2, color.alpha(0).rgb());
+	gradient.addColorStop(0, color.alpha(0).rgb());
 	return gradient;
-}
+};
 
-function lens(dist, scale, px, py, color, cx = canvas.width / 2, cy = canvas.height / 2, size = 128) {
-	const { radius, x, y } = getLens(dist, scale, size, px, py, cx, cy);
-	circle(x, y, radius, createGradient(x, y, radius, color));
+const createHaloGradient = (x, y, radius, color) => {
+	const width = 20 / radius;
+
+	// We need the second circle to be slightly offset from the first to avoid this bug:
+	// https://stackoverflow.com/questions/49640841/canvas-createradialgradient-not-working-as-expected-in-chrome-v65
+	const gradient = context.createRadialGradient(x, y, radius, x + 0.001, y, radius * 0.8);
+	gradient.addColorStop(0 + width * 3, color.alpha(0).rgb());
+	gradient.addColorStop(0 + width, color.rgb());
+	gradient.addColorStop(0, color.alpha(0).rgb());
+	return gradient;
+};
+
+const createGradient = (x, y, radius, color, isHalo) => isHalo ?
+	createHaloGradient(x, y, radius, color) : createSpotGradient(x, y, radius, color);
+
+/**
+ * @param settings {object}
+ *   @prop centerX {number}
+ *   @prop centerY {number}
+ *   @prop color {Color}
+ *   @prop distance {number} - Must not be 0. Works best between 1 and 10.
+ *                             The higher the number, the more the calculated centering point
+ *                             will tend towards the center provided.
+ *   @prop isHalo {bool}
+ *   @prop pointerX {number}
+ *   @prop pointerY {number}
+ *   @prop radius {number}
+ */
+function lens({ centerX, centerY, color, distance, isHalo, pointerX, pointerY, radius }) {
+	const { x, y } = getLensPosition(distance, pointerX, pointerY, centerX, centerY);
+	circle(x, y, radius, createGradient(x, y, radius, color, isHalo));
 }
 
 
@@ -95,6 +122,8 @@ const init = () => {
 	// Animation loop
 	animator.start(() => {
 		const { width, height } = canvas;
+		const centerX = width / 2;
+		const centerY = height / 2;
 
 		// Clear canvas
 		context.clearRect(0, 0, width, height);
@@ -111,13 +140,62 @@ const init = () => {
 		// context.fill();
 
 		// Lens flares
-		lens(1, 1, pointerX, pointerY, colorPink.lighten(0.5).alpha(0.3));
-		lens(2, 0.5, pointerX, pointerY, colorPink.alpha(0.3));
-		lens(3, 0.25, pointerX, pointerY, colorPurple.lighten(0.3).alpha(0.3));
-		lens(8, 1, pointerX, pointerY, colorPink.alpha(0.3));
-		lens(-2, 0.5, pointerX, pointerY, colorPurple.alpha(0.3));
-		lens(-4, 0.25, pointerX, pointerY, colorPink.lighten(0.3).alpha(0.3));
-		lens(-5.5, 0.2, pointerX, pointerY, colorPink.lighten(0.8).alpha(0.3));
+		const lensSettings = {
+			centerX,
+			centerY,
+			pointerX,
+			pointerY,
+		};
+
+		lens({
+			distance: 1,
+			radius: 1 * baseRadius,
+			color: colorPink.lighten(0.5).alpha(0.3),
+			...lensSettings,
+		});
+		lens({
+			distance: 2,
+			radius: 0.5 * baseRadius,
+			color: colorPink.alpha(0.3),
+			...lensSettings,
+		});
+		lens({
+			distance: 3,
+			radius: 0.25 * baseRadius,
+			color: colorPurple.lighten(0.3).alpha(0.3),
+			...lensSettings,
+		});
+		lens({
+			distance: 8,
+			radius: 1 * baseRadius,
+			color: colorPink.alpha(0.3),
+			...lensSettings,
+		});
+		lens({
+			distance:9,
+			radius: 1.1 * baseRadius,
+			color: colorPurple.alpha(0.3),
+			isHalo: true,
+			...lensSettings,
+		});
+		lens({
+			distance: -2,
+			radius: 0.5 * baseRadius,
+			color: colorPurple.alpha(0.3),
+			...lensSettings,
+		});
+		lens({
+			distance: -4,
+			radius: 0.25 * baseRadius,
+			color: colorPink.lighten(0.3).alpha(0.3),
+			...lensSettings,
+		});
+		lens({
+			distance: -5.5,
+			radius: 0.2 * baseRadius,
+			color: colorPink.lighten(0.8).alpha(0.3),
+			...lensSettings,
+		});
 
 	});
 
