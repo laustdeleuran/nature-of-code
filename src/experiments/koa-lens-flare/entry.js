@@ -59,7 +59,9 @@ const getLens = (dist, scale, size, px, py, cx, cy) => ({
 });
 
 function createGradient(x, y, radius, color) {
-	let gradient = context.createRadialGradient(x, y, radius, x, y, radius * 0.8);
+	// We need the second circle to be slightly offset from the first to avoid this bug:
+	// https://stackoverflow.com/questions/49640841/canvas-createradialgradient-not-working-as-expected-in-chrome-v65
+	let gradient = context.createRadialGradient(x, y, radius, x * 1.0001, y, radius * 0.8);
 	gradient.addColorStop(1, color.rgb());
 	gradient.addColorStop(0.2, color.alpha(0).rgb());
 	return gradient;
