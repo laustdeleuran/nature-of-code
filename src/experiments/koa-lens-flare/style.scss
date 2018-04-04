@@ -1,0 +1,11 @@
+html,
+body {
+	color: #fff;
+
+	background-color: #d8bac8;
+	background-image: url('./noise.png'),linear-gradient(135deg,#b289ad,#fdebe2);
+	background-size: 300px 300px,100vw 100vh;
+	background-repeat: repeat,no-repeat;
+	background-position: top,top;
+	background-attachment: local,fixed;
+}
