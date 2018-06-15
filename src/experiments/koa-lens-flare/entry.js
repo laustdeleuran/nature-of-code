@@ -5,7 +5,7 @@ import Animator from '../../utils/animator';
 import Canvas from '../../utils/canvas';
 import Color from 'color';
 import Label from '../../utils/label';
-import Pointer from '../koa-dust-motes/pointer';
+import Pointer from '../../utils/pointer';
 import { bindResizeEvents } from '../../utils/resize';
 // import convertRange from '../../utils/convert-range';
 // import normalizedRandom from '../../utils/normalized-random';
