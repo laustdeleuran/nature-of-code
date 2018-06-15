@@ -5,6 +5,7 @@ import Animator from '../../utils/animator';
 import Vector from '../../utils/vector';
 import PerlinNoise from '../../utils/perlin-noise';
 import Pointer from '../../utils/pointer';
+import Stats from 'stats.js';
 import { bindResizeEvents } from '../../utils/resize';
 
 import '../experiments.scss';
@@ -27,8 +28,11 @@ new Label({
  */
 const animator = new Animator(),
 	canvas = new Canvas(),
-	context = canvas.getContext();
+	context = canvas.getContext(),
+	stats = new Stats();
 
+stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild(stats.dom);
 // context.fillStyle = 'rgba(0, 0, 0, 0.0625)';
 
 
@@ -38,12 +42,15 @@ const animator = new Animator(),
  */
 class Particle {
 	constructor({
-		color = '#fff',
+		color = { r: 255, g: 255, b: 255 },
 		diameter = Math.random() * 2 + 0.5,
+		length = 10,
 		position: { x, y },
 	}) {
 		this.color = color;
 		this.diameter = diameter;
+		this.history = [{ x, y }];
+		this.length = length;
 		this.position = { x, y };
 	}
 
@@ -52,21 +59,30 @@ class Particle {
 
 	move(velocity) {
 		let { x, y } = this.position;
+
 		x += velocity.x;
 		y += velocity.y;
-		return this.position = { x, y };
+		this.position = { x, y };
+
+		this.history.unshift(this.position);
+		if (this.history.length > this.length) this.history = this.history.slice(0, this.length);
 	}
 
 	draw(context = context) {
-		const { color, diameter, position } = this;
-		var { x, y } = position;
-		var radius = diameter / 2;
+		const { color, diameter } = this;
+		const { r, g, b } = color;
+		const radius = diameter / 2;
 
-		context.fillStyle = color;
-		context.beginPath();
-		context.arc(x, y, radius, 0, Math.PI * 2, false);
-		context.closePath();
-		context.fill();
+		for (let h = 0; h < this.history.length; h++) {
+			const { x, y } = this.history[h];
+			const a = 1 - h / this.history.length;
+
+			context.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
+			context.beginPath();
+			context.arc(x, y, radius, 0, Math.PI * 2, false);
+			context.closePath();
+			context.fill();
+		}
 	}
 }
 
@@ -77,7 +93,7 @@ class Particle {
  */
 
 
-const DENSITY = 40;
+const DENSITY = 100;
 const COORDINATE_FACTOR = 8;
 const COLOR_PURPLE = { r: 249, g: 176, b: 208 };
 const COLOR_PINK = { r: 255, g: 180, b: 176 };
@@ -139,14 +155,27 @@ const init = () => {
 
 	// Animation loop
 	animator.start(() => {
-		// Clear canvas
-		// const { width, height } = canvas;
-		// context.clearRect(0, 0, width, height);
-		var gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-		gradient.addColorStop(0, 'rgba(149, 76, 178, 0.25)');
-		gradient.addColorStop(1, 'rgba(255, 80, 126, 0.25)');
-		context.fillStyle = gradient;
-		context.fillRect(0, 0, canvas.width, canvas.height);
+
+		stats.begin();
+
+		// Clear canvas completely
+		const { width, height } = canvas;
+		context.clearRect(0, 0, width, height);
+
+		// Overlay canvas with semi-transparent gradient
+		// const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+		// gradient.addColorStop(0, 'rgba(149, 76, 178, 0.25)');
+		// gradient.addColorStop(1, 'rgba(255, 80, 126, 0.25)');
+		// context.fillStyle = gradient;
+		// context.fillRect(0, 0, canvas.width, canvas.height);
+
+		// Manually edit the pixel data of the previous frame
+		// const lastImage = context.getImageData(0, 0, canvas.width, canvas.height);
+		// const pixelData = lastImage.data;
+		// for (let i=  3; i < pixelData.length; i += 4) {
+		// 	pixelData[i] -= 20;
+		// }
+		// context.putImageData(lastImage, 0, 0);
 
 		// Update pointer position
 		// pointer.update();
@@ -167,11 +196,13 @@ const init = () => {
 			}
 
 			const { r, g, b } = getColorFromPosition(particle.position, length);
-			particle.color = `rgb(${r}, ${g}, ${b})`;
+			particle.color = { r, g, b };
 
 			particle.move(velocity);
 			particle.draw(context);
 		}
+
+		stats.end();
 	});
 
 };

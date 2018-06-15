@@ -26,7 +26,8 @@
     "lodash": "^4.17.4",
     "raf": "^3.3.2",
     "res": "^0.4.0",
-    "simplex-noise": "^2.3.0"
+    "simplex-noise": "^2.3.0",
+    "stats.js": "^0.17.0"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
