@@ -7,6 +7,7 @@ import Vector from '../../utils/vector';
 // import Pointer from '../../utils/pointer';
 import Stats from 'stats.js';
 import { bindResizeEvents } from '../../utils/resize';
+import dat from 'dat-gui';
 
 import '../experiments.scss';
 import './style.scss';
@@ -79,10 +80,17 @@ class Particle {
 /**
  * Draw
  */
-const PARTICLES = 700;
-const COORDINATE_FACTOR = 8;
+const settings = {
+	coordinateFactor: 8,
+	fieldMap: 'burst',
+	particles: 700,
+	randomReset: 0.01,
+};
+
 const COLOR_PURPLE = { r: 249, g: 176, b: 208 };
 const COLOR_PINK = { r: 255, g: 180, b: 176 };
+
+let particles;
 
 const getColorFromPosition = ({ x, y }, length = new Vector(canvas.width, canvas.height).magnitude) => {
 	const magnitude = new Vector(x, y).magnitude;
@@ -94,8 +102,8 @@ const getColorFromPosition = ({ x, y }, length = new Vector(canvas.width, canvas
 };
 
 const convertPosition = ({ x, y }, { width, height } = canvas) => ({
-	x: convertRange(x, 0, width, -COORDINATE_FACTOR, COORDINATE_FACTOR),
-	y: convertRange(y, 0, height, -COORDINATE_FACTOR, COORDINATE_FACTOR),
+	x: convertRange(x, 0, width, -settings.coordinateFactor, settings.coordinateFactor),
+	y: convertRange(y, 0, height, -settings.coordinateFactor, settings.coordinateFactor),
 });
 
 const isOutOfBounds = ({ x, y }, { width, height } = canvas) =>
@@ -104,22 +112,42 @@ const isOutOfBounds = ({ x, y }, { width, height } = canvas) =>
 	y < 0 ||
 	y > height;
 
-// const getVelocity = position => ({
-// 	x: -2 * (Math.floor(Math.abs(position.y)) % 2) + 1,
-// 	y: -2 * (Math.floor(Math.abs(position.x)) % 2) + 1,
-// });
-const getVelocity = position => ({
-	x: position.x,
-	y: position.x / new Vector(position.x, position.y).magnitude,
-});
 
-let particles;
+const getVelocity = {
+	'diamonds': position => ({
+		x: -2 * (Math.floor(Math.abs(position.y)) % 2) + 1,
+		y: -2 * (Math.floor(Math.abs(position.x)) % 2) + 1,
+	}),
+	'burst': position => ({
+		x: position.x,
+		y: position.x / new Vector(position.x, position.y).magnitude,
+	}),
+	'lines': position => ({
+		x: Math.sin(position.y * Math.sin((position.y + position.y))),
+		y: Math.sin(Math.cos(position.y)),
+	}),
+	'rings': position => {
+		const magnitude = new Vector(position.x, position.y).magnitude;
+		return ({
+			x: Math.cos(Math.log(magnitude) * magnitude) / magnitude,
+			y: (position.y - position.y),
+		});
+	},
+	'twirl': position => ({
+		x: (position.x - Math.sin(new Vector(position.x, position.y).magnitude)),
+		y: position.x,
+	}),
+	'waterfall': position => ({
+		x: position.x / position.y,
+		y: Math.sin(position.y),
+	}),
+};
 
 const init = () => {
 	animator.stop();
 
 	particles = [];
-	for (let p = 0; p < PARTICLES; p++) {
+	for (let p = 0; p < settings.particles; p++) {
 		particles.push(new Particle({ position: {
 			x: Math.random() * canvas.width,
 			y: Math.random() * canvas.height
@@ -127,6 +155,7 @@ const init = () => {
 	}
 
 	const length = new Vector(canvas.width, canvas.height).magnitude;
+	const fieldMap = getVelocity[settings.fieldMap];
 
 	// Animation loop
 	animator.start(() => {
@@ -142,14 +171,17 @@ const init = () => {
 
 		for (let p = 0; p < particles.length; p++) {
 			let particle = particles[p];
-			let velocity = getVelocity(convertPosition(particle.position));
-			if (isOutOfBounds(particle.position) || Math.abs(velocity.x) + Math.abs(velocity.y) <= 0.001) {
+			let velocity = fieldMap(convertPosition(particle.position));
+			if (
+				Math.random() < settings.randomReset ||
+				isOutOfBounds(particle.position) ||
+				Math.abs(velocity.x) + Math.abs(velocity.y) <= 0.001) {
 				particle.position = {
 					x: canvas.width * Math.random(),
 					y: canvas.height * Math.random(),
 				};
 				particles[p] = particle;
-				velocity = getVelocity(convertPosition(particle.position));
+				velocity = fieldMap(convertPosition(particle.position));
 			}
 
 			const { r, g, b } = getColorFromPosition(particle.position, length);
@@ -166,3 +198,12 @@ const init = () => {
 
 bindResizeEvents(init);
 init();
+
+
+
+// Set up dat.GUI
+const gui = new dat.GUI();
+gui.add(settings, 'coordinateFactor', 1, 100).onChange(init);
+gui.add(settings, 'fieldMap', Object.keys(getVelocity)).onChange(init);
+gui.add(settings, 'particles', 1, 2000).onChange(init);
+gui.add(settings, 'randomReset', 0, 0.1).onChange(init);
