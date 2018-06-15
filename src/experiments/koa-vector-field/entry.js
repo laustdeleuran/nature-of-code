@@ -3,8 +3,8 @@ import convertRange from '../../utils/convert-range';
 import Canvas from '../../utils/canvas';
 import Animator from '../../utils/animator';
 import Vector from '../../utils/vector';
-import PerlinNoise from '../../utils/perlin-noise';
-import Pointer from '../../utils/pointer';
+// import PerlinNoise from '../../utils/perlin-noise';
+// import Pointer from '../../utils/pointer';
 import Stats from 'stats.js';
 import { bindResizeEvents } from '../../utils/resize';
 
@@ -79,9 +79,7 @@ class Particle {
 /**
  * Draw
  */
-
-
-const DENSITY = 40;
+const PARTICLES = 700;
 const COORDINATE_FACTOR = 8;
 const COLOR_PURPLE = { r: 249, g: 176, b: 208 };
 const COLOR_PINK = { r: 255, g: 180, b: 176 };
@@ -115,30 +113,18 @@ const getVelocity = position => ({
 	y: position.x / new Vector(position.x, position.y).magnitude,
 });
 
-// const pointer = new Pointer({
-// 	acceleration: 0.02,
-// 	position: {
-// 		x: canvas.width / 2,
-// 		y: canvas.height / 2
-// 	}
-// });
-
 let particles;
 
 const init = () => {
 	animator.stop();
 
 	particles = [];
-	for (let x = 0; x < canvas.width; x += DENSITY) {
-		for (let y = 0; y < canvas.height; y += DENSITY) {
-			particles.push(new Particle({ position: { x: x + DENSITY * Math.random() * 2 - 1, y: y + DENSITY * Math.random() * 2 - 1 } }));
-		}
+	for (let p = 0; p < PARTICLES; p++) {
+		particles.push(new Particle({ position: {
+			x: Math.random() * canvas.width,
+			y: Math.random() * canvas.height
+		} }));
 	}
-	console.log(particles.length);
-	// particles.push(new Particle({ position: {
-	// 	x: canvas.width * Math.random(),
-	// 	y: canvas.height * Math.random(),
-	// } }));
 
 	const length = new Vector(canvas.width, canvas.height).magnitude;
 
@@ -147,30 +133,12 @@ const init = () => {
 
 		stats.begin();
 
-		// Clear canvas completely
-		// const { width, height } = canvas;
-		// context.clearRect(0, 0, width, height);
-
 		// Overlay canvas with semi-transparent gradient
 		const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
 		gradient.addColorStop(0, 'rgba(149, 76, 178, 0.35)');
 		gradient.addColorStop(1, 'rgba(255, 80, 126, 0.35)');
 		context.fillStyle = gradient;
 		context.fillRect(0, 0, canvas.width, canvas.height);
-
-		// Manually edit the pixel data of the previous frame
-		// const lastImage = context.getImageData(0, 0, canvas.width, canvas.height);
-		// const pixelData = lastImage.data;
-		// for (let i=  3; i < pixelData.length; i += 4) {
-		// 	pixelData[i] -= 30;
-		// }
-		// context.putImageData(lastImage, 0, 0);
-
-		// Update pointer position
-		// pointer.update();
-		// context.beginPath();
-		// context.arc(pointer.position.x, pointer.position.y, 50, 0, Math.PI * 2);
-		// context.fill();
 
 		for (let p = 0; p < particles.length; p++) {
 			let particle = particles[p];
