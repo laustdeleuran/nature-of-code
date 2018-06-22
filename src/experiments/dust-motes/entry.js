@@ -16,7 +16,7 @@ import './style.scss';
  */
 new Label({
 	title: 'Dust motes on in the upside down',
-	desc: 'KOA - Dust motes'
+	desc: 'Dust motes'
 });
 
 

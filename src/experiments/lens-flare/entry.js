@@ -19,7 +19,7 @@ import roundTo from 'utils/round-to';
  */
 new Label({
 	title: 'Flares in your eyes',
-	desc: 'KOA - Lens flares'
+	desc: 'Lens flares'
 });
 
 

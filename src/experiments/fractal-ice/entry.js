@@ -17,7 +17,7 @@ import './style.scss';
  */
 new Label({
 	title: 'Holiday feels and acid flashbacks',
-	desc: 'KOA - Fractal ice'
+	desc: 'Fractal ice'
 });
 
 

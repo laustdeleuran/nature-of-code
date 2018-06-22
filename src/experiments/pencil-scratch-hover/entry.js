@@ -25,7 +25,7 @@ import Modernizr from 'browsernizr';
  */
 new Label({
 	title: 'Pencil scratch hover',
-	desc: 'KOA - DSDH'
+	desc: 'DSDH'
 });
 
 

@@ -15,7 +15,7 @@ import './style.scss';
  */
 new Label({
 	title: 'Pencil draw with color and trails',
-	desc: 'KOA - Website experiments'
+	desc: 'Website experiments'
 });
 
 

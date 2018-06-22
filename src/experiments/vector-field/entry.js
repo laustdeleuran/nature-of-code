@@ -19,7 +19,7 @@ import './style.scss';
  */
 new Label({
 	title: 'Vector field and particles',
-	desc: 'KOA - Website experiments'
+	desc: 'Website experiments'
 });
 
 
