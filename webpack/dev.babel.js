@@ -1,7 +1,9 @@
 import compiler, { host, paths } from './config.babel';
 
 import webpack from 'webpack';
-import OpenBrowserPlugin from 'open-browser-webpack-plugin';
+
+import BrowserSyncPlugin from 'browser-sync-webpack-plugin';
+import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 
 // Add dev stuff to every entry
 
@@ -60,10 +62,31 @@ compiler.plugins = [
 		}
 	}),
 
-	// Opens the browser with the url webpack-dev-server is running on
-	new OpenBrowserPlugin({
-		url: host.url
-	}),
+	// Shows a progress bar when building
+	new ProgressBarPlugin(),
+
+	// Add named modules plugin
+	new webpack.NamedModulesPlugin(),
+
+	// Add browser sync plugin
+	new BrowserSyncPlugin(
+		{
+			// browse to http://localhost:3100/ during development
+			host: config.domain,
+			port: 3000,
+			// proxy the Webpack Dev Server endpoint
+			// through BrowserSync
+			proxy: 'http://' + config.domain + ':3100',
+			// Don't minify the client-side JS
+			minify: false
+		},
+		// plugin options
+		{
+			// prevent BrowserSync from reloading the page
+			// and let Webpack Dev Server take care of this
+			reload: false
+		}
+	),
 
 	// Adds hot module relacement
 	new webpack.HotModuleReplacementPlugin()
