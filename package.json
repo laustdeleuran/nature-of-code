@@ -24,10 +24,10 @@
     "captainslog": "^0.3.2",
     "color": "^3.0.0",
     "dat-gui": "^0.5.0",
-    "lodash": "^4.17.4",
-    "raf": "^3.3.2",
+    "lodash": "^4.17.10",
+    "raf": "^3.4.0",
     "res": "^0.4.0",
-    "simplex-noise": "^2.3.0",
+    "simplex-noise": "^2.4.0",
     "stats.js": "^0.17.0"
   },
   "devDependencies": {
