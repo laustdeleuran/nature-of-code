@@ -14,6 +14,15 @@ import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 
 
 
+// Environment
+export const
+	NODE_ENV_DEVELOPMENT = 'development',
+	NODE_ENV_STAGING = 'staging',
+	NODE_ENV_PRODUCTION = 'production',
+	env = process.env.NODE_ENV || NODE_ENV_DEVELOPMENT;
+
+
+
 /**
  * Paths
  */
@@ -58,6 +67,7 @@ export const entries = (() => {
  * Webpack compiler configuration
  */
 export default {
+	mode: (env === NODE_ENV_DEVELOPMENT ? 'development' : 'production'),
 	entry: entries,
 	output: {
 		path: paths.dest,

@@ -24,6 +24,10 @@ for (let key in compiler.entry) {
 
 
 
+compiler.mode = 'development';
+
+
+
 // Watch
 compiler.watch = true;
 
