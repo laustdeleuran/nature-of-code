@@ -1,12 +1,12 @@
-import Label from '../../utils/label';
-import convertRange from '../../utils/convert-range';
-import Canvas from '../../utils/canvas';
-import Animator from '../../utils/animator';
-import Vector from '../../utils/vector';
-// import PerlinNoise from '../../utils/perlin-noise';
-// import Pointer from '../../utils/pointer';
+import Label from '../../helpers/label';
+import convertRange from 'utils/convert-range';
+import Canvas from 'utils/canvas';
+import Animator from 'utils/animator';
+import Vector from 'utils/vector';
+// import PerlinNoise from 'utils/perlin-noise';
+// import Pointer from 'utils/pointer';
 import Stats from 'stats.js';
-import { bindResizeEvents } from '../../utils/resize';
+import { bindResizeEvents } from 'utils/resize';
 import dat from 'dat-gui';
 
 import '../experiments.scss';
@@ -19,7 +19,7 @@ import './style.scss';
  */
 new Label({
 	title: 'Vector field and particles',
-	desc: 'KOA - Website experiments'
+	desc: 'Website experiments'
 });
 
 

@@ -1,6 +1,6 @@
-import Label from '../../utils/label';
-import Canvas from '../../utils/canvas';
-import PerlinNoise from '../../utils/perlin-noise';
+import Label from '../../helpers/label';
+import Canvas from 'utils/canvas';
+import PerlinNoise from 'utils/perlin-noise';
 
 import '../examples.scss';
 

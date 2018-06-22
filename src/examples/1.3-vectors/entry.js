@@ -1,6 +1,6 @@
-import Label from '../../utils/label';
-import Canvas from '../../utils/canvas';
-import Vector from '../../utils/vector';
+import Label from '../../helpers/label';
+import Canvas from 'utils/canvas';
+import Vector from 'utils/vector';
 
 import '../examples.scss';
 

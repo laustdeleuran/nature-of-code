@@ -1,7 +1,9 @@
 import compiler, { host, paths } from './config.babel';
 
 import webpack from 'webpack';
-import OpenBrowserPlugin from 'open-browser-webpack-plugin';
+
+import BrowserSyncPlugin from 'browser-sync-webpack-plugin';
+import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 
 // Add dev stuff to every entry
 
@@ -24,6 +26,10 @@ for (let key in compiler.entry) {
 
 
 
+compiler.mode = 'development';
+
+
+
 // Watch
 compiler.watch = true;
 
@@ -31,11 +37,56 @@ compiler.watch = true;
 
 // Setup dev server
 compiler.devServer = {
-	contentBase: paths.dest,
 	hot: true,
 	inline: true,
-	port: host.port,
-	public: host.name + ':' + host.port
+	// clientLogLevel: "none",
+	contentBase: paths.dest,
+	port: 3100,
+	disableHostCheck: true,
+	stats: {
+		// Add asset Information
+		assets: false,
+		// Sort assets by a field
+		assetsSort: 'field',
+		// Add information about cached (not built) modules
+		cached: false,
+		// Add children information
+		children: false,
+		// Add chunk information (setting this to `false` allows for a less verbose output)
+		chunks: false,
+		// Add built modules information to chunk information
+		chunkModules: false,
+		// Add the origins of chunks and chunk merging info
+		chunkOrigins: false,
+		// Sort the chunks by a field
+		chunksSort: 'field',
+		// Context directory for request shortening
+		context: paths.src,
+		// `webpack --colors` equivalent
+		colors: true,
+		// Add errors
+		errors: true,
+		// Add details to errors (like resolving log)
+		errorDetails: true,
+		// Add the hash of the compilation
+		hash: false,
+		// Add built modules information
+		modules: false,
+		// Sort the modules by a field
+		modulesSort: 'field',
+		// Add public path information
+		publicPath: false,
+		// Add information about the reasons why modules are included
+		reasons: false,
+		// Add the source code of modules
+		source: false,
+		// Add timing information
+		timings: true,
+		// Add webpack version information
+		version: false,
+		// Add warnings
+		warnings: true
+	}
 };
 
 
@@ -56,10 +107,31 @@ compiler.plugins = [
 		}
 	}),
 
-	// Opens the browser with the url webpack-dev-server is running on
-	new OpenBrowserPlugin({
-		url: host.url
-	}),
+	// Shows a progress bar when building
+	new ProgressBarPlugin(),
+
+	// Add named modules plugin
+	new webpack.NamedModulesPlugin(),
+
+	// Add browser sync plugin
+	new BrowserSyncPlugin(
+		{
+			// browse to http://localhost:3100/ during development
+			host: 'localhost',
+			port: 3000,
+			// proxy the Webpack Dev Server endpoint
+			// through BrowserSync
+			proxy: 'http://localhost:3100',
+			// Don't minify the client-side JS
+			minify: false
+		},
+		// plugin options
+		{
+			// prevent BrowserSync from reloading the page
+			// and let Webpack Dev Server take care of this
+			reload: false
+		}
+	),
 
 	// Adds hot module relacement
 	new webpack.HotModuleReplacementPlugin()

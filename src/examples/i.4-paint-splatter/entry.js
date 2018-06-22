@@ -1,6 +1,6 @@
-import Canvas from '../../utils/canvas';
-import Animator from '../../utils/animator';
-import Gaussian from '../../utils/gaussian';
+import Canvas from 'utils/canvas';
+import Animator from 'utils/animator';
+import Gaussian from 'utils/gaussian';
 
 import '../examples.scss';
 

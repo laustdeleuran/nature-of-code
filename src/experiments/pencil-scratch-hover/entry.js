@@ -1,9 +1,9 @@
-import Label from '../../utils/label';
-import convertRange from '../../utils/convert-range';
-import log from '../../utils/log';
-import Animator from '../../utils/animator';
+import Label from '../../helpers/label';
+import convertRange from 'utils/convert-range';
+import log from 'utils/log';
+import Animator from 'utils/animator';
 import SimplexNoise from 'simplex-noise';
-import { bindResizeEvents, unBindResizeEvents } from '../../utils/resize';
+import { bindResizeEvents, unBindResizeEvents } from 'utils/resize';
 import dat from 'dat-gui';
 
 import '../experiments.scss';
@@ -25,7 +25,7 @@ import Modernizr from 'browsernizr';
  */
 new Label({
 	title: 'Pencil scratch hover',
-	desc: 'KOA - DSDH'
+	desc: 'DSDH'
 });
 
 

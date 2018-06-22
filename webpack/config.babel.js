@@ -14,12 +14,22 @@ import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 
 
 
+// Environment
+export const
+	NODE_ENV_DEVELOPMENT = 'development',
+	NODE_ENV_STAGING = 'staging',
+	NODE_ENV_PRODUCTION = 'production',
+	env = process.env.NODE_ENV || NODE_ENV_DEVELOPMENT;
+
+
+
 /**
  * Paths
  */
 export const paths = {
+	dest: path.resolve(__dirname + '/../build'),
 	src: path.resolve(__dirname + '/../src'),
-	dest: path.resolve(__dirname + '/../build')
+	utils: path.resolve(__dirname, '../koalition-utils/'),
 };
 
 
@@ -57,11 +67,18 @@ export const entries = (() => {
  * Webpack compiler configuration
  */
 export default {
+	mode: (env === NODE_ENV_DEVELOPMENT ? 'development' : 'production'),
 	entry: entries,
 	output: {
 		path: paths.dest,
 		filename: '[name].js',
 		publicPath: '/'
+	},
+
+	resolve: {
+		alias: {
+			'utils': paths.utils
+		}
 	},
 
 	module: {
@@ -77,8 +94,8 @@ export default {
 			},
 			// Loads client javascript & jsx
 			{
-				test: /\.js$/,
-				include: paths.src,
+				test: /\.jsx?$/,
+				include: [paths.utils, paths.src],
 				use: {
 					loader: 'babel-loader'
 				}

@@ -1,9 +1,9 @@
-import Label from '../../utils/label';
-import convertRange from '../../utils/convert-range';
-import Canvas from '../../utils/canvas';
-import Animator from '../../utils/animator';
-import Vector from '../../utils/vector';
-import PerlinNoise from '../../utils/perlin-noise';
+import Label from '../../helpers/label';
+import convertRange from 'utils/convert-range';
+import Canvas from 'utils/canvas';
+import Animator from 'utils/animator';
+import Vector from 'utils/vector';
+import PerlinNoise from 'utils/perlin-noise';
 
 import '../experiments.scss';
 import './style.scss';
@@ -15,7 +15,7 @@ import './style.scss';
  */
 new Label({
 	title: 'Pencil draw with color and trails',
-	desc: 'KOA - Website experiments'
+	desc: 'Website experiments'
 });
 
 

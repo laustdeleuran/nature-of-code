@@ -1,15 +1,15 @@
 import '../experiments.scss';
 import './style.scss';
 
-import Animator from '../../utils/animator';
-import Canvas from '../../utils/canvas';
+import Animator from 'utils/animator';
+import Canvas from 'utils/canvas';
 import Color from 'color';
-import Label from '../../utils/label';
-import Pointer from '../../utils/pointer';
-import { bindResizeEvents } from '../../utils/resize';
-// import convertRange from '../../utils/convert-range';
-// import normalizedRandom from '../../utils/normalized-random';
-import roundTo from '../../utils/round-to';
+import Label from '../../helpers/label';
+import Pointer from 'utils/pointer';
+import { bindResizeEvents } from 'utils/resize';
+// import convertRange from 'utils/convert-range';
+// import normalizedRandom from 'utils/normalized-random';
+import roundTo from 'utils/round-to';
 
 
 
@@ -19,7 +19,7 @@ import roundTo from '../../utils/round-to';
  */
 new Label({
 	title: 'Flares in your eyes',
-	desc: 'KOA - Lens flares'
+	desc: 'Lens flares'
 });
 
 
