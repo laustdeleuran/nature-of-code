@@ -1,7 +1,7 @@
-import Label from '../../utils/label';
-import Canvas from '../../utils/canvas';
-import Animator from '../../utils/animator';
-import Gaussian from '../../utils/gaussian';
+import Label from '../../helpers/label';
+import Canvas from 'utils/canvas';
+import Animator from 'utils/animator';
+import Gaussian from 'utils/gaussian';
 
 import '../examples.scss';
 

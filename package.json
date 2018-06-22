@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/laustdeleuran/nature-of-code#readme",
   "dependencies": {
+    "bowser": "^1.9.3",
     "browsernizr": "^2.2.0",
     "captainslog": "^0.3.2",
     "color": "^3.0.0",
@@ -34,6 +35,7 @@
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "babel-register": "^6.24.1",

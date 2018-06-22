@@ -1,10 +1,10 @@
-import Animator from '../../utils/animator';
-import Canvas from '../../utils/canvas';
-import Label from '../../utils/label';
-import { bindResizeEvents } from '../../utils/resize';
+import Animator from 'utils/animator';
+import Canvas from 'utils/canvas';
+import Label from '../../helpers/label';
+import { bindResizeEvents } from 'utils/resize';
 
 import Mote from './mote';
-import Pointer from '../../utils/pointer';
+import Pointer from 'utils/pointer';
 
 import '../experiments.scss';
 import './style.scss';

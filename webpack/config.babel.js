@@ -18,8 +18,9 @@ import ProgressBarPlugin from 'progress-bar-webpack-plugin';
  * Paths
  */
 export const paths = {
+	dest: path.resolve(__dirname + '/../build'),
 	src: path.resolve(__dirname + '/../src'),
-	dest: path.resolve(__dirname + '/../build')
+	utils: path.resolve(__dirname, '../koalition-utils/'),
 };
 
 
@@ -64,6 +65,12 @@ export default {
 		publicPath: '/'
 	},
 
+	resolve: {
+		alias: {
+			'utils': paths.utils
+		}
+	},
+
 	module: {
 		rules: [
 			// Lints client javascript & jsx
@@ -77,8 +84,8 @@ export default {
 			},
 			// Loads client javascript & jsx
 			{
-				test: /\.js$/,
-				include: paths.src,
+				test: /\.jsx?$/,
+				include: [paths.utils, paths.src],
 				use: {
 					loader: 'babel-loader'
 				}

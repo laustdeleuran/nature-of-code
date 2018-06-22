@@ -1,7 +1,7 @@
-import Label from '../../utils/label';
-import Canvas from '../../utils/canvas';
-import Animator from '../../utils/animator';
-import random from '../../utils/random';
+import Label from '../../helpers/label';
+import Canvas from 'utils/canvas';
+import Animator from 'utils/animator';
+import random from 'utils/random';
 
 import '../examples.scss';
 

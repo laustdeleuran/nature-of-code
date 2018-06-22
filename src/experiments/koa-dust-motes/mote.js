@@ -1,5 +1,5 @@
-import roundTo from '../../utils/round-to';
-import normalizedRandom from '../../utils/normalized-random';
+import roundTo from 'utils/round-to';
+import normalizedRandom from 'utils/normalized-random';
 
 
 
