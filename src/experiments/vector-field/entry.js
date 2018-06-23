@@ -1,3 +1,7 @@
+/**
+ * Credit: A lot of the code here was inspired by https://github.com/anvaka/fieldplay
+ */
+
 import Label from '../../helpers/label';
 import convertRange from 'utils/convert-range';
 import Canvas from 'utils/canvas';
@@ -112,13 +116,13 @@ const isOutOfBounds = ({ x, y }, { width, height } = canvas) =>
 	y < 0 ||
 	y > height;
 
-
+// These "algorithms" in particular were sourced from https://github.com/anvaka/fieldplay
 const getVelocity = {
-	'diamonds': position => ({
+	diamonds: position => ({
 		x: -2 * (Math.floor(Math.abs(position.y)) % 2) + 1,
 		y: -2 * (Math.floor(Math.abs(position.x)) % 2) + 1,
 	}),
-	'burst': position => ({
+	burst: position => ({
 		x: position.x,
 		y: position.x / new Vector(position.x, position.y).magnitude,
 	}),
@@ -126,18 +130,18 @@ const getVelocity = {
 		x: Math.sin(position.y * Math.sin((position.y + position.y))),
 		y: Math.sin(Math.cos(position.y)),
 	}),
-	'rings': position => {
+	rings: position => {
 		const magnitude = new Vector(position.x, position.y).magnitude;
 		return ({
 			x: Math.cos(Math.log(magnitude) * magnitude) / magnitude,
 			y: (position.y - position.y),
 		});
 	},
-	'twirl': position => ({
+	twirl: position => ({
 		x: (position.x - Math.sin(new Vector(position.x, position.y).magnitude)),
 		y: position.x,
 	}),
-	'waterfall': position => ({
+	waterfall: position => ({
 		x: position.x / position.y,
 		y: Math.sin(position.y),
 	}),

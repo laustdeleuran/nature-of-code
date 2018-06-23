@@ -42,7 +42,7 @@ const
  * Settings
  */
 const settings = {
-	density: 0.1,
+	density: 0.05,
 	emphasis: 50,
 	lineNoiseIncrement: 0.0001,
 	margin: 0.1,
@@ -124,12 +124,14 @@ const init = () => {
 	const { density, lineNoiseIncrement, margin, noiseIncrement, points } = settings;
 	const marginY = height * margin;
 	const marginX = width * margin;
-	const lineCount = (height - marginY * 2) * density;
-	const yGutter = (height - marginY * 2) / lineCount;
+	const innerHeight = (height - marginY * 2);
+	const lineCount = Math.round(innerHeight * density);
+	const yGutter = Math.round(innerHeight / lineCount);
 	const pointCount = Math.floor(new Vector(0, marginX).distance({ x: 0, y: width - marginX }) * points);
 	const lines = [];
+	const rest = (innerHeight - lineCount * yGutter) / 2;
 
-	for (let y = marginY; y < (height - marginY); y += yGutter) {
+	for (let y = marginY + rest; y <= (height - marginY - rest); y += yGutter) {
 		lines.push(new Line({
 			emphasis: settings.emphasis * (1 - Math.abs(convertRange(y, marginY, height - marginY, -1, 1))),
 			points: pointCount,
