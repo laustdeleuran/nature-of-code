@@ -1,4 +1,4 @@
-import compiler, { host, paths } from './config.babel';
+import compiler, { paths } from './config.babel';
 
 import webpack from 'webpack';
 
@@ -13,7 +13,7 @@ import ProgressBarPlugin from 'progress-bar-webpack-plugin';
 const alwaysInclude = [
 	// bundle the client for webpack-dev-server
 	// and connect to the provided endpoint
-	'webpack-dev-server/client?' + host.url,
+	'webpack-dev-server/client?http://localhost:3100',
 
 	// bundle the client for hot reloading
 	// only- means to only hot reload for successful updates
@@ -116,9 +116,9 @@ compiler.plugins = [
 	// Add browser sync plugin
 	new BrowserSyncPlugin(
 		{
-			// browse to http://localhost:3100/ during development
+			// browse to http://localhost:1337/ during development
 			host: 'localhost',
-			port: 3000,
+			port: 1337,
 			// proxy the Webpack Dev Server endpoint
 			// through BrowserSync
 			proxy: 'http://localhost:3100',
