@@ -35,18 +35,6 @@ export const paths = {
 
 
 /**
- * Host settings
- */
-export const host = {
-	name: 'localhost',
-	port: '1337',
-	protocol: 'http'
-};
-host.url = host.protocol + '://' + host.name + ':' + host.port;
-
-
-
-/**
  * Entries
  */
 export const entries = (() => {
