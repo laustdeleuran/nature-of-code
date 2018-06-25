@@ -174,7 +174,7 @@ gui.add(settings, 'density', 0.001, 0.25).onChange(init);
 gui.add(settings, 'dissonance', 0, 0.01).onChange(init);
 gui.add(settings, 'emphasis', 1, 100).onChange(init);
 gui.add(settings, 'margin', 0, 0.4).onChange(init);
-gui.add(settings, 'noiseIncrement', 0, 0.1).onChange(init);
+gui.add(settings, 'noiseIncrement', -0.1, 0.1).name('speed').onChange(init);
 gui.add(settings, 'points', 0.001, 0.25).onChange(init);
 
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
