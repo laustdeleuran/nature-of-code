@@ -41,14 +41,16 @@ const
 /**
  * Settings
  */
-const settings = {
-	density: 0.05,
-	emphasis: 50,
-	lineNoiseIncrement: 0.0001,
-	margin: 0.1,
-	noiseIncrement: 0.01,
-	points: 0.1,
-};
+const
+	settings = {
+		density: 0.05,
+		dissonance: 0.001,
+		emphasis: 50,
+		margin: 0.1,
+		noiseIncrement: 0.01,
+		points: 0.1,
+	};
+
 
 
 /**
@@ -94,14 +96,13 @@ class Line {
 			let emphasisX = 1 - Math.abs(convertRange(x, this._start.x, this._stop.x, -1, 1));
 			const point = {
 				x,
-				y: this._start.y + simplex.noise2D(x, noiseY) * this.emphasis * emphasisX
+				y: this._start.y + simplex.noise2D(x, this._start.y * settings.dissonance + noiseY) * this.emphasis * emphasisX
 			};
 			const controlPoint = {
 				x: (lastPoint.x + point.x) / 2,
 				y: (lastPoint.y + point.y) / 2,
 			};
 			context.quadraticCurveTo(lastPoint.x, lastPoint.y, controlPoint.x, controlPoint.y);
-			noiseY += settings.lineNoiseIncrement;
 			lastPoint = point;
 		}
 
@@ -121,7 +122,7 @@ const init = () => {
 	animator.stop();
 
 	const { width, height } = canvas;
-	const { density, lineNoiseIncrement, margin, noiseIncrement, points } = settings;
+	const { density, margin, noiseIncrement, points } = settings;
 	const marginY = height * margin;
 	const marginX = width * margin;
 	const innerHeight = (height - marginY * 2);
@@ -153,7 +154,6 @@ const init = () => {
 		// Draw lines
 		for (let l = 0; l < lines.length; l++) {
 			lines[l].draw(context, noiseY);
-			noiseY += lineNoiseIncrement;
 		}
 		noiseY += noiseIncrement;
 
@@ -171,10 +171,10 @@ init();
  * Stats and dat.GUI
  */
 gui.add(settings, 'density', 0.001, 0.25).onChange(init);
+gui.add(settings, 'dissonance', 0, 0.01).onChange(init);
 gui.add(settings, 'emphasis', 1, 100).onChange(init);
 gui.add(settings, 'margin', 0, 0.4).onChange(init);
-gui.add(settings, 'noiseIncrement', 0, 0.01).onChange(init);
-gui.add(settings, 'lineNoiseIncrement', 0, 0.0001).onChange(init);
+gui.add(settings, 'noiseIncrement', 0, 0.1).onChange(init);
 gui.add(settings, 'points', 0.001, 0.25).onChange(init);
 
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
