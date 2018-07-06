@@ -66,7 +66,7 @@ function restore_head {
 }
 
 if ! git diff --exit-code --quiet --cached; then
-	echo Aborting due to uncommitted changes in the index >&2
+	echo "Aborting due to uncommitted changes in the index" >&2
 	exit 1
 fi
 
@@ -111,7 +111,9 @@ set +o errexit
 diff=$(git --work-tree "$deploy_directory" diff --exit-code --quiet HEAD)$?
 set -o errexit
 case $diff in
-	0) echo No changes to files in $deploy_directory. Skipping commit.;;
+	0)
+		echo "No changes to files in $deploy_directory. Skipping commit."
+		;;
 	1)
 		set_user_id
 		git --work-tree "$deploy_directory" commit -m \
