@@ -20,7 +20,7 @@ import './style.scss';
  * Project label
  */
 new Label({
-	title: 'Wave form lines',
+	title: 'Rainbow colored wave form lines',
 	desc: 'Website experiments'
 });
 
@@ -44,14 +44,15 @@ const
  */
 const
 	settings = {
-		colorVariance: 0.1,
-		density: 0.05,
-		dissonance: 0.001,
+		colorA: 'rgb(255, 255, 0)',
+		colorB: 'rgb(255, 0, 255)',
+		colorRotation: 0.3,
+		density: 0.15,
+		dissonance: 0.009,
 		emphasis: 50,
-		margin: 0.1,
-		noiseIncrement: 0.01,
+		margin: 0.08,
+		noiseIncrement: 0.005,
 		points: 0.1,
-		seedColor: 'rgb(128,128,128)',
 	};
 
 
@@ -59,24 +60,6 @@ const
 /**
  * Animation
  */
-
-// Color space
-const normalizeColorValue = value => {
-	value = Math.round(value);
-	if (value > 255) value = 255 - value;
-	if (value < 0) value = 255 + value;
-	return value;
-};
-const getColorSpace = (seed = 'rgb(128,128,128)', variance = 0.1) => {
-	seed = Color(seed).color;
-	variance *= 255;
-	const r = [normalizeColorValue(seed[0] - Math.random() * variance), normalizeColorValue(seed[0] + Math.random() * variance)];
-	const g = [normalizeColorValue(seed[1] - Math.random() * variance), normalizeColorValue(seed[1] + Math.random() * variance)];
-	const b = [normalizeColorValue(seed[2] - Math.random() * variance), normalizeColorValue(seed[2] + Math.random() * variance)];
-	return { r, g, b };
-};
-
-// Line
 class Line {
 	constructor({
 		color = '#fff',
@@ -143,7 +126,9 @@ const init = () => {
 	animator.stop();
 
 	const { width, height } = canvas;
-	const { density, margin, noiseIncrement, points, seedColor, colorVariance } = settings;
+	const { colorA, colorB, density, margin, points } = settings;
+	let colorStart = Color(colorA).color;
+	let colorEnd = Color(colorB).color;
 	const marginY = height * margin;
 	const marginX = width * margin;
 	const innerHeight = (height - marginY * 2);
@@ -151,15 +136,16 @@ const init = () => {
 	const yGutter = Math.round(innerHeight / lineCount);
 	const pointCount = Math.floor(new Vector(0, marginX).distance({ x: 0, y: width - marginX }) * points);
 	const lines = [];
+	const colors = [];
 	const rest = (innerHeight - lineCount * yGutter) / 2;
-	const color = getColorSpace(seedColor, colorVariance);
 
 	for (let y = marginY + rest; y <= (height - marginY - rest); y += yGutter) {
-		const r = Math.round(convertRange(y, marginY, height - marginY, color.r[0], color.r[1]));
-		const g = Math.round(convertRange(y, marginY, height - marginY, color.g[0], color.g[1]));
-		const b = Math.round(convertRange(y, marginY, height - marginY, color.b[0], color.b[1]));
+		colors.push(Color({
+			r: Math.round(convertRange(y, marginY, height - marginY, colorStart[0], colorEnd[0])),
+			g: Math.round(convertRange(y, marginY, height - marginY, colorStart[1], colorEnd[1])),
+			b: Math.round(convertRange(y, marginY, height - marginY, colorStart[2], colorEnd[2])),
+		}));
 		lines.push(new Line({
-			color: `rgb(${r}, ${g}, ${b})`,
 			emphasis: settings.emphasis * (1 - Math.abs(convertRange(y, marginY, height - marginY, -1, 1))),
 			points: pointCount,
 			start: { x: marginX, y },
@@ -168,6 +154,7 @@ const init = () => {
 	}
 
 	let noiseY = 1000 * Math.random();
+	let colorRotation = 0;
 
 	// Animation loop
 	animator.start(() => {
@@ -179,9 +166,14 @@ const init = () => {
 
 		// Draw lines
 		for (let l = 0; l < lines.length; l++) {
-			lines[l].draw(context, noiseY);
+			const
+				color = colors[l],
+				line = lines[l];
+			line.color = color.rotate(-colorRotation).rgb().string();
+			line.draw(context, noiseY);
 		}
-		noiseY += noiseIncrement;
+		noiseY += settings.noiseIncrement;
+		colorRotation += settings.colorRotation;
 
 		stats.end();
 	});
@@ -196,14 +188,15 @@ init();
 /**
  * Stats and dat.GUI
  */
-gui.add(settings, 'colorVariance', 0, 1).onChange(init);
+gui.addColor(settings, 'colorA').onChange(init);
+gui.addColor(settings, 'colorB').onChange(init);
+gui.add(settings, 'colorRotation', -5, 5);
 gui.add(settings, 'density', 0.001, 0.25).onChange(init);
-gui.add(settings, 'dissonance', 0, 0.01).onChange(init);
+gui.add(settings, 'dissonance', 0, 0.01);
 gui.add(settings, 'emphasis', 1, 100).onChange(init);
 gui.add(settings, 'margin', 0, 0.4).onChange(init);
-gui.add(settings, 'noiseIncrement', -0.1, 0.1).name('speed').onChange(init);
+gui.add(settings, 'noiseIncrement', -0.1, 0.1).name('speed');
 gui.add(settings, 'points', 0.001, 0.25).onChange(init);
-gui.addColor(settings, 'seedColor').onChange(init);
 
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
