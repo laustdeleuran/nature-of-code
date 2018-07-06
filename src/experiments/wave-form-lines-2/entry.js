@@ -52,7 +52,7 @@ const
 		emphasis: 50,
 		margin: 0.1,
 		noiseIncrement: 0.005,
-		points: 0.1,
+		points: 0.05,
 	};
 
 
