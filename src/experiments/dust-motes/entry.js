@@ -15,7 +15,7 @@ import './style.scss';
  * Project label
  */
 new Label({
-	title: 'Dust motes on in the upside down',
+	title: 'Dust motes in the upside down',
 	desc: 'Dust motes'
 });
 
