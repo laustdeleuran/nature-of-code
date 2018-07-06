@@ -50,7 +50,7 @@ const
 		density: 0.15,
 		dissonance: 0.009,
 		emphasis: 50,
-		margin: 0.08,
+		margin: 0.1,
 		noiseIncrement: 0.005,
 		points: 0.1,
 	};
