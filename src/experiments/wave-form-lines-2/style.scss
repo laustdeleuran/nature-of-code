@@ -1,0 +1,12 @@
+$color-a: rgb(10, 10, 10);
+$color-b: rgb(39, 39, 41);
+
+html,
+body {
+  background: mix($color-a, $color-b);
+	background: linear-gradient(-45deg, $color-b, $color-a);
+}
+
+body {
+	height: 100vh;
+}
