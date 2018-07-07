@@ -1,5 +1,6 @@
 {
   "name": "ljd-nature-of-code",
+  "host": "nature-of-code.ljd.dk",
   "version": "0.1.6",
   "description": "Various examples, experiments and utils that I've made as part of reading [The Nature of Code](http://natureofcode.com/).",
   "scripts": {
@@ -32,6 +33,7 @@
     "browser-sync-webpack-plugin": "^2.2.2",
     "browsernizr": "^2.2.0",
     "captainslog": "^0.3.2",
+    "cname-webpack-plugin": "^1.0.2",
     "color": "^3.0.0",
     "css-loader": "^0.28.11",
     "dat-gui": "^0.5.0",
