@@ -95,7 +95,7 @@ export default {
 				use: {
 					loader: 'file-loader',
 					options: {
-						name: '[name].[sha512:hash:base64:7].[ext]'
+						name: 'static/[name].[sha512:hash:base64:7].[ext]'
 					}
 				}
 			},
