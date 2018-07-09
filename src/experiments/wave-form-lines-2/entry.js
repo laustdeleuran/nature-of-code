@@ -122,9 +122,9 @@ class Line {
 
 
 // Loop
-const init = () => {
-	animator.stop();
+let data;
 
+const createLines = () => {
 	const { width, height } = canvas;
 	const { colorA, colorB, density, margin, points } = settings;
 	let colorStart = Color(colorA).color;
@@ -153,8 +153,16 @@ const init = () => {
 		}));
 	}
 
+	data = { colors, lines, colorRotation: 0 };
+};
+
+const init = () => {
+	animator.stop();
+
+	const { width, height } = canvas;
+	createLines();
+
 	let noiseY = 1000 * Math.random();
-	let colorRotation = 0;
 
 	// Animation loop
 	animator.start(() => {
@@ -165,22 +173,23 @@ const init = () => {
 		context.clearRect(0, 0, width, height);
 
 		// Draw lines
+		const { colors, lines } = data;
 		for (let l = 0; l < lines.length; l++) {
 			const
 				color = colors[l],
 				line = lines[l];
-			line.color = color.rotate(-colorRotation).rgb().string();
+			line.color = color.rotate(-data.colorRotation).rgb().string();
 			line.draw(context, noiseY);
 		}
 		noiseY += settings.noiseIncrement;
-		colorRotation += settings.colorRotation;
+		data.colorRotation += settings.colorRotation;
 
 		stats.end();
 	});
 
 };
 
-bindResizeEvents(init);
+bindResizeEvents(createLines);
 init();
 
 
@@ -188,15 +197,15 @@ init();
 /**
  * Stats and dat.GUI
  */
-gui.addColor(settings, 'colorA').onChange(init);
-gui.addColor(settings, 'colorB').onChange(init);
 gui.add(settings, 'colorRotation', -5, 5);
-gui.add(settings, 'density', 0.001, 0.25).onChange(init);
+gui.add(settings, 'density', 0.001, 0.25).onChange(createLines);
 gui.add(settings, 'dissonance', 0, 0.01);
-gui.add(settings, 'emphasis', 1, 100).onChange(init);
-gui.add(settings, 'margin', 0, 0.4).onChange(init);
+gui.add(settings, 'emphasis', 1, 100).onChange(createLines);
+gui.add(settings, 'margin', 0, 0.4).onChange(createLines);
+gui.addColor(settings, 'colorA').name('seedColorA').onChange(createLines);
+gui.addColor(settings, 'colorB').name('seedColorB').onChange(createLines);
 gui.add(settings, 'noiseIncrement', -0.1, 0.1).name('speed');
-gui.add(settings, 'points', 0.001, 0.25).onChange(init);
+gui.add(settings, 'points', 0.001, 0.25).onChange(createLines);
 
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
