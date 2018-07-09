@@ -197,13 +197,13 @@ init();
 /**
  * Stats and dat.GUI
  */
+gui.addColor(settings, 'colorA').onChange(createLines);
+gui.addColor(settings, 'colorB').onChange(createLines);
 gui.add(settings, 'colorRotation', -5, 5);
 gui.add(settings, 'density', 0.001, 0.25).onChange(createLines);
 gui.add(settings, 'dissonance', 0, 0.01);
 gui.add(settings, 'emphasis', 1, 100).onChange(createLines);
 gui.add(settings, 'margin', 0, 0.4).onChange(createLines);
-gui.addColor(settings, 'colorA').name('seedColorA').onChange(createLines);
-gui.addColor(settings, 'colorB').name('seedColorB').onChange(createLines);
 gui.add(settings, 'noiseIncrement', -0.1, 0.1).name('speed');
 gui.add(settings, 'points', 0.001, 0.25).onChange(createLines);
 
