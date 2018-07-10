@@ -1,7 +1,7 @@
 {
   "name": "ljd-nature-of-code",
   "host": "nature-of-code.ljd.dk",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Various examples, experiments and utils that I've made as part of reading [The Nature of Code](http://natureofcode.com/).",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
