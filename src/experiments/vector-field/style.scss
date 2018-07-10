@@ -1,10 +1,7 @@
-$color-a: rgb(149, 76, 178);
-$color-b: rgb(255, 80, 126);
 
 html,
 body {
-  background: mix($color-a, $color-b);
-	background: linear-gradient(-45deg, $color-b, $color-a);
+  background: black;
 }
 
 body {

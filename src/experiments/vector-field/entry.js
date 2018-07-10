@@ -7,6 +7,7 @@ import convertRange from 'utils/convert-range';
 import Canvas from 'utils/canvas';
 import Animator from 'utils/animator';
 import Vector from 'utils/vector';
+import Color from 'color';
 // import PerlinNoise from 'utils/perlin-noise';
 // import Pointer from 'utils/pointer';
 import Stats from 'stats.js';
@@ -87,21 +88,23 @@ class Particle {
 const settings = {
 	coordinateFactor: 8,
 	fieldMap: 'burst',
+	bgColorA: '#5a007f',
+	bgColorB: '#7d0000',
+	particleColorA: '#c3bbff',
+	particleColorB: '#ffc864',
 	particles: 700,
 	randomReset: 0.01,
+	trailVisibility: 0.65,
 };
-
-const COLOR_PURPLE = { r: 249, g: 176, b: 208 };
-const COLOR_PINK = { r: 255, g: 180, b: 176 };
 
 let particles;
 
-const getColorFromPosition = ({ x, y }, length = new Vector(canvas.width, canvas.height).magnitude) => {
+const getColorFromPosition = ({ x, y }, colorA, colorB, length = new Vector(canvas.width, canvas.height).magnitude) => {
 	const magnitude = new Vector(x, y).magnitude;
 	return {
-		r: convertRange(magnitude, 0, length, COLOR_PINK.r, COLOR_PURPLE.r),
-		g: convertRange(magnitude, 0, length, COLOR_PINK.g, COLOR_PURPLE.g),
-		b: convertRange(magnitude, 0, length, COLOR_PINK.b, COLOR_PURPLE.b),
+		r: convertRange(magnitude, 0, length, colorA.r, colorB.r),
+		g: convertRange(magnitude, 0, length, colorA.g, colorB.g),
+		b: convertRange(magnitude, 0, length, colorA.b, colorB.b),
 	};
 };
 
@@ -158,8 +161,16 @@ const init = () => {
 		} }));
 	}
 
-	const length = new Vector(canvas.width, canvas.height).magnitude;
+	const colorA = new Color(settings.particleColorA).rgb().object();
+	const colorB = new Color(settings.particleColorB).rgb().object();
 	const fieldMap = getVelocity[settings.fieldMap];
+	const length = new Vector(canvas.width, canvas.height).magnitude;
+
+	const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+	gradient.addColorStop(0, new Color(settings.bgColorA).string());
+	gradient.addColorStop(1, new Color(settings.bgColorB).string());
+	context.fillStyle = gradient;
+	context.fillRect(0, 0, canvas.width, canvas.height);
 
 	// Animation loop
 	animator.start(() => {
@@ -168,8 +179,8 @@ const init = () => {
 
 		// Overlay canvas with semi-transparent gradient
 		const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-		gradient.addColorStop(0, 'rgba(149, 76, 178, 0.35)');
-		gradient.addColorStop(1, 'rgba(255, 80, 126, 0.35)');
+		gradient.addColorStop(0, new Color(settings.bgColorA).fade(1 - settings.trailVisibility).string());
+		gradient.addColorStop(1, new Color(settings.bgColorB).fade(1 - settings.trailVisibility).string());
 		context.fillStyle = gradient;
 		context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -188,7 +199,7 @@ const init = () => {
 				velocity = fieldMap(convertPosition(particle.position));
 			}
 
-			const { r, g, b } = getColorFromPosition(particle.position, length);
+			const { r, g, b } = getColorFromPosition(particle.position, colorA, colorB, length);
 			particle.color = `rgb(${r}, ${g}, ${b})`;
 
 			particle.move(velocity);
@@ -207,7 +218,12 @@ init();
 
 // Set up dat.GUI
 const gui = new dat.GUI();
+gui.addColor(settings, 'bgColorA').onChange(init);
+gui.addColor(settings, 'bgColorB').onChange(init);
 gui.add(settings, 'coordinateFactor', 1, 100).onChange(init);
 gui.add(settings, 'fieldMap', Object.keys(getVelocity)).onChange(init);
+gui.addColor(settings, 'particleColorA').onChange(init);
+gui.addColor(settings, 'particleColorB').onChange(init);
 gui.add(settings, 'particles', 1, 2000).onChange(init);
 gui.add(settings, 'randomReset', 0, 0.1).onChange(init);
+gui.add(settings, 'trailVisibility', 0, 1).onChange(init);
