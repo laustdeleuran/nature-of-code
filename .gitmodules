@@ -1,3 +1,6 @@
 [submodule "koalition-utils"]
 	path = koalition-utils
 	url = git@bitbucket.org:koalition/koalition-utils.git
+[submodule "src/experiments/multi-cultural/seriouslyjs"]
+	path = src/experiments/multi-cultural/seriouslyjs
+	url = https://github.com/brianchirls/Seriously.js.git
