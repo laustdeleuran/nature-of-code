@@ -65,7 +65,8 @@ export default {
 
 	resolve: {
 		alias: {
-			'utils': paths.utils
+			'utils': paths.utils,
+			'seriously': __dirname + '/../lib/seriouslyjs/seriously.js',
 		}
 	},
 
@@ -90,7 +91,7 @@ export default {
 			},
 			// Copies client cursors, icons, images, and fonts
 			{
-				test: /\.(cur|ico|png|jpe?g|gif|svg|woff2?|otf|ttf|eot)$/,
+				test: /\.(cur|ico|png|jpe?g|gif|svg|woff2?|otf|ttf|eot|mp4)$/,
 				include: paths.src,
 				use: {
 					loader: 'file-loader',
