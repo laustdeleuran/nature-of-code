@@ -16,18 +16,61 @@ const createElement = (name, container = document.body) => {
 	return element;
 };
 
+const convertPosition = ({ x, y }) => ({
+	x: x / window.innerWidth * WIDTH,
+	y: y / window.innerHeight * HEIGHT,
+});
+
 
 
 /**
- * Set up videos and vizualizations
+ * Set up globals
  */
 import VIDEOS from './data';
 import Seriously from 'seriously';
-import '../../../lib/seriouslyjs/effects/seriously.falsecolor.js';
+import '../../../lib/seriouslyjs/effects/seriously.ascii.js';
 
-// const videoContainer = createElement('div');
+const WIDTH = 1280;
+const HEIGHT = 720;
+
 const canvasContainer = createElement('figure');
 
+
+
+/**
+ * Overlay
+ */
+const overlayCanvas = createElement('canvas', canvasContainer);
+overlayCanvas.width = WIDTH;
+overlayCanvas.height = HEIGHT;
+overlayCanvas.className = 'canvas--overlay';
+const overlayContext = overlayCanvas.getContext('2d');
+
+const drawFlashlight = ({ x, y }, radius = (WIDTH / 4)) => {
+	overlayContext.globalCompositeOperation = 'source-over';
+
+	overlayContext.fillStyle = 'rgba(0, 0, 0, 0.25)';
+	overlayContext.clearRect(0, 0, overlayContext.canvas.width, overlayContext.canvas.height);
+	overlayContext.fillRect(0, 0, overlayContext.canvas.width, overlayContext.canvas.height);
+
+	overlayContext.beginPath();
+	const radialGradient = overlayContext.createRadialGradient(x, y, 1, x, y, radius);
+	radialGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+	radialGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+	overlayContext.globalCompositeOperation = 'destination-out';
+
+	overlayContext.fillStyle = radialGradient;
+	overlayContext.arc(x, y, radius, 0, Math.PI * 2, false);
+	overlayContext.fill();
+	overlayContext.closePath();
+};
+
+
+
+/**
+ * Video players
+ */
 class MultiVideoplayer {
 	static videos = VIDEOS;
 
@@ -46,7 +89,7 @@ class MultiVideoplayer {
 	};
 	seriously = new Seriously();
 
-	constructor(posX = 'center', posY = 'center', width = 640, height = 360) {
+	constructor(posX = 'center', posY = 'center', width = WIDTH / 2, height = HEIGHT / 2) {
 		this.elements.canvas.addEventListener('click', () => this.init());
 		this.width = width;
 		this.height = height;
@@ -69,11 +112,13 @@ class MultiVideoplayer {
 		const { canvas, video } = this.elements;
 		let source = this.seriously.source(video),
 			target = this.seriously.target(canvas),
-			effect = this.seriously.effect('falsecolor');
+			effect = this.seriously.effect('ascii');
 
 		effect.source = source;
 		target.source = effect;
 		this.seriously.go();
+
+		this.srsly = { effect, source, target };
 	}
 
 	addVideoListener() {
@@ -122,15 +167,24 @@ class MultiVideoplayer {
 		}
 		const distance = Math.sqrt(Math.pow(Math.abs(x - xCur), 2) + Math.pow(Math.abs(y - yCur), 2));
 		const radius = height / 2;
-		return constrain(convertRange(distance, radius, radius * 3, 1, 0), 0, 1);
+		return convertRange(distance, radius, radius * 3, 1, 0);
 	};
 
-	setVolume = position => {
+	setVolume(distance) {
 		const { video } = this.elements;
-		let distance = this.getDistance(position);
 		video.volume = constrain(distance, 0.2, 1);
-		this.elements.canvas.style.opacity = constrain(distance, 0.5, 1);
-	};
+	}
+
+	// setEffectAmount(distance) {
+	// 	this.srsly.effect.size = constrain(convertRange(distance, 0, 3, 0.4, 0.001), 0.001, 0.4);
+	// 	this.elements.canvas.style.opacity = constrain(distance, 0.5, 1);
+	// }
+
+	update(position) {
+		let distance = this.getDistance(position);
+		this.setVolume(distance);
+		// this.setEffectAmount(distance);
+	}
 }
 
 const players = [];
@@ -160,10 +214,13 @@ const pointer = new Pointer({
 
 animator.start(() => {
 	pointer.update();
+	// const pos = convertPosition(pointer.position);
 
 	for (let p = 0; p < players.length; p++) {
-		players[p].setVolume(pointer.position);
+		players[p].update(pointer.position);
 	}
+
+	drawFlashlight(convertPosition(pointer.position));
 });
 
 
@@ -174,7 +231,7 @@ animator.start(() => {
 import Label from '../../helpers/label';
 
 new Label({
-	title: 'MultiCULTural',
-	desc: 'Let me tell you how to do that'
+	title: 'Multi-CULT-ural',
+	desc: 'Let me tell you how to live your life'
 });
 
