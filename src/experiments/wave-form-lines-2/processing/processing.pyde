@@ -2,17 +2,23 @@
 options = {
 	'color_a': color(255, 255, 0),
 	'color_b': color(255, 0, 255),
-	'density': 0.015,
+	'density': 0.055,
 	'dissonance': 0.009,
-	'emphasis': 50,
+	'emphasis': 100,
 	'margin': 0.1,
-	'noise_increment': 0.005,
+	'noise_increment': 0.01,
 	'points': 0.05,
 }
 
 lines = []
 line_count = 0
 noise_y = random(1000)
+
+
+def draw_vertex(last_point, next_point):
+	mid_point = PVector((last_point.x + next_point.x) / 2, (last_point.y + next_point.y) / 2)
+	quadraticVertex(last_point.x, last_point.y, mid_point.x, mid_point.y)
+
 
 
 
@@ -48,21 +54,15 @@ class Line:
 
 		x = self._start.x + point_distance;
 		for n in range(self.points):
-			# let emphasisX = 1 - Math.abs(convertRange(x, this._start.x, this._stop.x, -1, 1));
 			emphasis_curve = 1 - abs(map(x, self._start.x, self._stop.x, -1, 1))
-			# this._start.y + simplex.noise2D(x, this._start.y * settings.dissonance + noiseY) * this.emphasis * emphasisX
 			y = self._start.y + noise(x, self._start.y * options.get('dissonance') + noise_y) * self.emphasis * emphasis_curve
 			next_point = PVector(x, y)
-			# line(last_point.x, last_point.y, next_point.x, next_point.y)
-			# control_point = PVector((last_point.x + next_point.x) / 2, (last_point.y + next_point.y) / 2)
-			# print(last_point, control_point, next_point)
-			# quadraticVertex(control_point.x, control_point.y, last_point.x, last_point.y)
-			curveVertex(next_point.x, next_point.y)
+			draw_vertex(last_point, next_point)
 			last_point = next_point
 			x += point_distance
 
-		control_point = PVector((last_point.x + self._stop.x) / 2, (last_point.y + self._stop.y) / 2)
-		quadraticVertex(control_point.x, control_point.y, self._stop.x, self._stop.y)
+		draw_vertex(last_point, self._stop)
+		draw_vertex(self._stop, self._stop)
 		endShape()
 
 
