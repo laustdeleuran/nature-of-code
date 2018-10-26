@@ -134,7 +134,7 @@ const createLines = () => {
 	const innerHeight = (height - marginY * 2);
 	const lineCount = Math.round(innerHeight * density);
 	const yGutter = Math.round(innerHeight / lineCount);
-	const pointCount = Math.floor(new Vector(0, marginX).distance({ x: 0, y: width - marginX }) * points);
+	const pointCount = Math.floor(new Vector(marginX, 0).distance({ x: width - marginX, y: 0 }) * points);
 	const lines = [];
 	const colors = [];
 	const rest = (innerHeight - lineCount * yGutter) / 2;

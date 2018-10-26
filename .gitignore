@@ -29,3 +29,4 @@ docs
 build
 lib
 nature-of-code-examples-source
+*.autosave
