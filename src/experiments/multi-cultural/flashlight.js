@@ -1,34 +1,27 @@
-
-import { createElement } from './utils';
-import { CANVAS_CONTAINER, WIDTH, HEIGHT } from './settings';
+import { WIDTH, OVERLAY_CONTEXT } from './settings';
 
 /**
  * Overlay
  */
-const overlayCanvas = createElement('canvas', CANVAS_CONTAINER);
-overlayCanvas.width = WIDTH;
-overlayCanvas.height = HEIGHT;
-overlayCanvas.className = 'canvas--overlay';
-const overlayContext = overlayCanvas.getContext('2d');
 
 const drawFlashlight = ({ x, y }, radius = (WIDTH / 4)) => {
-	overlayContext.globalCompositeOperation = 'source-over';
+	OVERLAY_CONTEXT.globalCompositeOperation = 'source-over';
 
-	overlayContext.fillStyle = 'rgba(0, 0, 0, 0.25)';
-	overlayContext.clearRect(0, 0, overlayContext.canvas.width, overlayContext.canvas.height);
-	overlayContext.fillRect(0, 0, overlayContext.canvas.width, overlayContext.canvas.height);
+	OVERLAY_CONTEXT.fillStyle = 'rgba(0, 0, 0, 0.75)';
+	OVERLAY_CONTEXT.clearRect(0, 0, OVERLAY_CONTEXT.canvas.width, OVERLAY_CONTEXT.canvas.height);
+	OVERLAY_CONTEXT.fillRect(0, 0, OVERLAY_CONTEXT.canvas.width, OVERLAY_CONTEXT.canvas.height);
 
-	overlayContext.beginPath();
-	const radialGradient = overlayContext.createRadialGradient(x, y, 1, x, y, radius);
+	OVERLAY_CONTEXT.beginPath();
+	const radialGradient = OVERLAY_CONTEXT.createRadialGradient(x, y, 1, x, y, radius);
 	radialGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
 	radialGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
-	overlayContext.globalCompositeOperation = 'destination-out';
+	OVERLAY_CONTEXT.globalCompositeOperation = 'destination-out';
 
-	overlayContext.fillStyle = radialGradient;
-	overlayContext.arc(x, y, radius, 0, Math.PI * 2, false);
-	overlayContext.fill();
-	overlayContext.closePath();
+	OVERLAY_CONTEXT.fillStyle = radialGradient;
+	OVERLAY_CONTEXT.arc(x, y, radius, 0, Math.PI * 2, false);
+	OVERLAY_CONTEXT.fill();
+	OVERLAY_CONTEXT.closePath();
 };
 
 export default drawFlashlight;
