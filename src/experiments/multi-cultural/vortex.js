@@ -8,7 +8,7 @@ export default class Vortex {
 	constructor(
 		x = Math.round(WIDTH * Math.random()),
 		y = Math.round(HEIGHT * Math.random()),
-		mass = Math.round(15),
+		mass = 15,
 		friction = 0.1
 	) {
 		this._position = new Vector(x, y);
@@ -33,7 +33,9 @@ export default class Vortex {
 
 	draw(context) {
 		const { x, y } = this._position;
+		context.globalCompositeOperation = 'source-over';
 		context.beginPath();
+		context.fillStyle = '#ffff00';
 		context.arc(x, y, this._mass, 0, Math.PI * 2);
 		context.fill();
 	}
