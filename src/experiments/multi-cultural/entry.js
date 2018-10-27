@@ -4,10 +4,13 @@ import './style.scss';
 import { convertPosition } from './utils';
 import { WIDTH, HEIGHT } from './settings';
 import Vector from 'utils/vector';
+import constrain from 'utils/constrain';
 
 import drawFlashlight from './flashlight';
 import MultiVideoplayer from './video-player';
 import { OVERLAY_CANVAS } from './settings';
+import bindGamepad from './gamepad';
+
 
 
 /**
@@ -25,49 +28,44 @@ for (let i = 0; i < 4; i++) {
 
 
 /**
+ * Pointer
+ */
+let activePointer;
+const MULTIPLIER = 4;
+const pointer = {
+	x: WIDTH / 2,
+	y: HEIGHT / 2,
+};
+let lastSeenBtns;
+
+bindGamepad(({ axis, buttons }) => {
+	if (axis.x !== 0 || axis.y !== 0) {
+		pointer.x = constrain(pointer.x + axis.x * MULTIPLIER, 0, window.innerWidth);
+		pointer.y = constrain(pointer.y + axis.y * MULTIPLIER, 0, window.innerHeight);
+		activePointer = pointer;
+	}
+
+	if (buttons.a === true && lastSeenBtns.a !== true) players[0].start();
+	if (buttons.b === true && lastSeenBtns.b !== true) players[1].start();
+	if (buttons.x === true && lastSeenBtns.x !== true) players[2].start();
+	if (buttons.y === true && lastSeenBtns.y !== true) players[3].start();
+
+	lastSeenBtns = buttons;
+});
+
+
+
+/**
  * @draw
  */
 import Animator from 'utils/animator';
 import Vortex from './vortex';
 import Attractor from './attractor';
 
-let activePointer;
-const
-	getPointerEventPosition = event => {
-		let x, y;
-
-		// Get pointer position from event
-		if (event.touches && event.touches[0]) {
-			x = event.touches[0].clientX;
-			y = event.touches[0].clientY;
-		} else {
-			x = event.clientX;
-			y = event.clientY;
-		}
-
-		return { x, y };
-	},
-	pointerListener = event => {
-		activePointer = getPointerEventPosition(event);
-	};
-document.addEventListener('mousemove', pointerListener, { passive: true });
-document.addEventListener('touchmove', pointerListener, { passive: true });
-
 const animator = new Animator();
 const attractor = new Attractor();
 attractor.update(OVERLAY_CANVAS); // , OVERLAY_CONTEXT
 const vortex = new Vortex();
-
-const requestFullScreen = (elem = document.documentElement) => {
-	if (elem.requestFullscreen) elem.requestFullscreen();
-	else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
-	else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-	else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
-};
-
-document.addEventListener('keydown', event => {
-	if (event.key === 'f') requestFullScreen();
-});
 
 animator.start(() => {
 	// Get attractor
@@ -84,9 +82,7 @@ animator.start(() => {
 	x -= vortex.x;
 	y -= vortex.y;
 
-	if (x < 1 && y < 1 && activePointer) {
-		activePointer = null;
-	}
+	if (x < 1 && y < 1 && activePointer) activePointer = null;
 
 	vortex.applyForce(new Vector(x, y));
 	vortex.update(); // OVERLAY_CONTEXT
@@ -98,6 +94,26 @@ animator.start(() => {
 
 	drawFlashlight(convertPosition(position, WIDTH, HEIGHT));
 });
+
+
+
+/**
+ * Fullscreen
+ */
+const requestFullScreen = (elem = document.documentElement) => {
+	if (elem.requestFullscreen) elem.requestFullscreen();
+	else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
+	else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+	else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+};
+
+document.addEventListener('keydown', event => {
+	if (event.key === 'f') requestFullScreen();
+});
+
+
+
+
 
 
 

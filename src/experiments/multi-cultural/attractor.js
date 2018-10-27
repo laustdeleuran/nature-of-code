@@ -9,16 +9,16 @@ export default class Attractor {
 	static simplex = new SimplexNoise();
 
 	constructor(increment) {
-		increment = increment || 0.0025;
+		increment = increment || 0.00125;
 
 		this.increment = increment;
 		this.xOff = Math.round(1000 * Math.random());
 		this.yOff = Math.round(1000 * Math.random());
 	}
 
-	move(canvas) {
-		this.x = convertRange(Attractor.simplex.noise2D(this.xOff, this.xOff), -1, 1, 0, canvas.width);
-		this.y = convertRange(Attractor.simplex.noise2D(this.yOff, this.yOff), -1, 1, 0, canvas.height);
+	move() {
+		this.x = convertRange(Attractor.simplex.noise2D(this.xOff, this.xOff), -1, 1, 0, window.innerWidth);
+		this.y = convertRange(Attractor.simplex.noise2D(this.yOff, this.yOff), -1, 1, 0, window.innerHeight);
 
 		this.xOff += this.increment;
 		this.yOff += this.increment;

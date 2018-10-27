@@ -7,7 +7,7 @@ import { WIDTH, OVERLAY_CONTEXT } from './settings';
 const drawFlashlight = ({ x, y }, radius = (WIDTH / 4)) => {
 	OVERLAY_CONTEXT.globalCompositeOperation = 'source-over';
 
-	OVERLAY_CONTEXT.fillStyle = 'rgba(0, 0, 0, 0.75)';
+	OVERLAY_CONTEXT.fillStyle = 'rgba(0, 0, 0, 0.9)';
 	OVERLAY_CONTEXT.clearRect(0, 0, OVERLAY_CONTEXT.canvas.width, OVERLAY_CONTEXT.canvas.height);
 	OVERLAY_CONTEXT.fillRect(0, 0, OVERLAY_CONTEXT.canvas.width, OVERLAY_CONTEXT.canvas.height);
 

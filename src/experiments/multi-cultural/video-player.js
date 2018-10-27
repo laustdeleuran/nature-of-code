@@ -3,7 +3,7 @@ import VIDEOS from './data';
 import { CANVAS_CONTAINER, WIDTH, HEIGHT } from './settings';
 
 import Seriously from 'seriously';
-import '../../../lib/seriouslyjs/effects/seriously.ascii.js';
+import '../../../lib/seriouslyjs/effects/seriously.invert.js';
 
 import { createElement } from './utils';
 import constrain from 'utils/constrain';
@@ -33,7 +33,7 @@ export default class MultiVideoplayer {
 	seriously = new Seriously();
 
 	constructor(posX = 'center', posY = 'center', width = WIDTH / 2, height = HEIGHT / 2) {
-		this.elements.canvas.addEventListener('click', () => this.init());
+		// this.elements.canvas.addEventListener('click', () => this.start());
 		this.width = width;
 		this.height = height;
 		this.position = { x: posX, y: posY };
@@ -51,22 +51,27 @@ export default class MultiVideoplayer {
 		this.bindSeriously();
 	}
 
-	bindSeriously() {
+	bindSeriously(effectKey = 'invert') {
+		if (this._isGoing) this.seriously.stop();
+
 		const { canvas, video } = this.elements;
 		let source = this.seriously.source(video),
 			target = this.seriously.target(canvas),
-			effect = this.seriously.effect('ascii');
+			effect = this.seriously.effect(effectKey);
 
 		effect.source = source;
 		target.source = effect;
 		this.seriously.go();
+		this._isGoing = true;
 
 		this.srsly = { effect, source, target };
 	}
 
 	addVideoListener() {
 		const { video } = this.elements;
-		video.addEventListener('ended', this.start);
+		video.addEventListener('ended', () => {
+			this.start();
+		});
 	}
 
 	start() {
@@ -115,7 +120,7 @@ export default class MultiVideoplayer {
 
 	setVolume(distance) {
 		const { video } = this.elements;
-		video.volume = constrain(distance, 0.2, 1);
+		video.volume = constrain(distance, 0.1, 1);
 	}
 
 	// setEffectAmount(distance) {
