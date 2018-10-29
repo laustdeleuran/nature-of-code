@@ -34,7 +34,6 @@ const canvas = new Canvas({
 const centerVector = new Vector(0, 0);
 
 function draw(pointerVector) {
-
 	// Draw line to pointer
 	context.beginPath();
 	context.moveTo(centerVector.x, centerVector.y);

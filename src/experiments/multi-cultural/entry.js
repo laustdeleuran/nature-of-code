@@ -1,170 +1,119 @@
 import '../experiments.scss';
 import './style.scss';
 
+import { convertPosition } from './utils';
+import { WIDTH, HEIGHT } from './settings';
+import Vector from 'utils/vector';
 import constrain from 'utils/constrain';
-import convertRange from 'utils/convert-range';
 
-
-
-
-/**
- * Utils
- */
-const createElement = (name, container = document.body) => {
-	const element = document.createElement(name);
-	if (container) container.appendChild(element);
-	return element;
-};
+import drawFlashlight from './flashlight';
+import MultiVideoplayer from './video-player';
+import { OVERLAY_CANVAS } from './settings';
+import bindGamepad from './gamepad';
 
 
 
 /**
- * Set up videos and vizualizations
+ * @setup
  */
-import VIDEOS from './data';
-import Seriously from 'seriously';
-import '../../../lib/seriouslyjs/effects/seriously.falsecolor.js';
-
-// const videoContainer = createElement('div');
-const canvasContainer = createElement('figure');
-
-class MultiVideoplayer {
-	static videos = VIDEOS;
-
-	static selectedVideos = [];
-
-	static getRandomUniqueVideoIndex = () => {
-		const index = Math.floor(Math.random() * MultiVideoplayer.videos.length);
-		if (MultiVideoplayer.selectedVideos.indexOf(index) > -1) return MultiVideoplayer.getRandomUniqueVideoIndex();
-		else return index;
-	}
-
-	index = MultiVideoplayer.selectedVideos.push(null) - 1;
-	elements = {
-		canvas: createElement('canvas', canvasContainer),
-		video: createElement('video', false),
-	};
-	seriously = new Seriously();
-
-	constructor(posX = 'center', posY = 'center', width = 640, height = 360) {
-		this.elements.canvas.addEventListener('click', () => this.init());
-		this.width = width;
-		this.height = height;
-		this.position = { x: posX, y: posY };
-	}
-
-	init() {
-		this.addVideoListener();
-
-		this.elements.canvas.width = this.width;
-		this.elements.canvas.height = this.height;
-		this.elements.video.width = this.width;
-		this.elements.video.height = this.height;
-
-		this.start();
-		this.bindSeriously();
-	}
-
-	bindSeriously() {
-		const { canvas, video } = this.elements;
-		let source = this.seriously.source(video),
-			target = this.seriously.target(canvas),
-			effect = this.seriously.effect('falsecolor');
-
-		effect.source = source;
-		target.source = effect;
-		this.seriously.go();
-	}
-
-	addVideoListener() {
-		const { video } = this.elements;
-		video.addEventListener('ended', this.start);
-	}
-
-	start() {
-		const src = this.selectVideoSrc();
-		const { video } = this.elements;
-		video.src = src;
-
-		video.play();
-	}
-
-	selectVideoSrc() {
-		const index = MultiVideoplayer.getRandomUniqueVideoIndex();
-		MultiVideoplayer.selectedVideos[this.index] = index;
-		return MultiVideoplayer.videos[index];
-	}
-
-	set volume(volume) {
-		const { video } = this.elements;
-		video.volume = volume;
-		return video.volume;
-	}
-
-	getDistance = ({ x: xCur, y: yCur }) => {
-		const { canvas } = this.elements;
-		let { x, y, width, height } = canvas.getBoundingClientRect();
-		switch (this.position.x) {
-			case 'center':
-				x += width / 2;
-				break;
-			case 'right':
-				x += width;
-				break;
-		}
-		switch (this.position.y) {
-			case 'center':
-				y += height / 2;
-				break;
-			case 'bottom':
-				y += height;
-				break;
-		}
-		const distance = Math.sqrt(Math.pow(Math.abs(x - xCur), 2) + Math.pow(Math.abs(y - yCur), 2));
-		const radius = height / 2;
-		return constrain(convertRange(distance, radius, radius * 3, 1, 0), 0, 1);
-	};
-
-	setVolume = position => {
-		const { video } = this.elements;
-		let distance = this.getDistance(position);
-		video.volume = constrain(distance, 0.2, 1);
-		this.elements.canvas.style.opacity = constrain(distance, 0.5, 1);
-	};
-}
-
 const players = [];
 for (let i = 0; i < 4; i++) {
 	let player = new MultiVideoplayer(
-		(i  === 0 || i === 2) ? 'left' : 'right',
-		(i  === 0 || i === 1) ? 'top' : 'bottom',
+		(i	=== 0 || i === 2) ? 'left' : 'right',
+		(i	=== 0 || i === 1) ? 'top' : 'bottom',
 	);
 	players.push(player);
 	player.init();
 }
 
+
 /**
- * Set up mouse and volume tracking
+ * Pointer
+ */
+let activePointer;
+const MULTIPLIER = 4;
+const pointer = {
+	x: WIDTH / 2,
+	y: HEIGHT / 2,
+};
+let lastSeenBtns;
+
+bindGamepad(({ axis, buttons }) => {
+	if (axis.x !== 0 || axis.y !== 0) {
+		pointer.x = constrain(pointer.x + axis.x * MULTIPLIER, 0, window.innerWidth);
+		pointer.y = constrain(pointer.y + axis.y * MULTIPLIER, 0, window.innerHeight);
+		activePointer = pointer;
+	}
+
+	if (buttons.a === true && lastSeenBtns.a !== true) players[0].start();
+	if (buttons.b === true && lastSeenBtns.b !== true) players[1].start();
+	if (buttons.x === true && lastSeenBtns.x !== true) players[2].start();
+	if (buttons.y === true && lastSeenBtns.y !== true) players[3].start();
+
+	lastSeenBtns = buttons;
+});
+
+
+
+/**
+ * @draw
  */
 import Animator from 'utils/animator';
-import Pointer from 'utils/pointer';
+import Vortex from './vortex';
+import Attractor from './attractor';
 
 const animator = new Animator();
-const pointer = new Pointer({
-	acceleration: 0.1,
-	position: {
-		x: window.innerWidth / 2,
-		y: window.innerHeight / 2
-	}
-});
+const attractor = new Attractor();
+attractor.update(OVERLAY_CANVAS); // , OVERLAY_CONTEXT
+const vortex = new Vortex();
 
 animator.start(() => {
-	pointer.update();
+	// Get attractor
+	let x, y;
+	if (activePointer) {
+		x = activePointer.x;
+		y = activePointer.y;
+	} else {
+		attractor.update(OVERLAY_CANVAS); // , OVERLAY_CONTEXT
+		x = attractor.x;
+		y = attractor.y;
+	}
+
+	x -= vortex.x;
+	y -= vortex.y;
+
+	if (x < 1 && y < 1 && activePointer) activePointer = null;
+
+	vortex.applyForce(new Vector(x, y));
+	vortex.update(); // OVERLAY_CONTEXT
+	const position = { x: vortex.x, y: vortex.y };
 
 	for (let p = 0; p < players.length; p++) {
-		players[p].setVolume(pointer.position);
+		players[p].update(position);
 	}
+
+	drawFlashlight(convertPosition(position, WIDTH, HEIGHT));
 });
+
+
+
+/**
+ * Fullscreen
+ */
+const requestFullScreen = (elem = document.documentElement) => {
+	if (elem.requestFullscreen) elem.requestFullscreen();
+	else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
+	else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+	else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+};
+
+document.addEventListener('keydown', event => {
+	if (event.key === 'f') requestFullScreen();
+});
+
+
+
+
 
 
 
@@ -174,7 +123,7 @@ animator.start(() => {
 import Label from '../../helpers/label';
 
 new Label({
-	title: 'MultiCULTural',
-	desc: 'Let me tell you how to do that'
+	title: 'Let me tell you how to live your life',
+	desc: 'Do you even believe, bro?'
 });
 
