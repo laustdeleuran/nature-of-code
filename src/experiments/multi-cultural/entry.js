@@ -123,7 +123,7 @@ document.addEventListener('keydown', event => {
 import Label from '../../helpers/label';
 
 new Label({
-	title: 'Multi-CULT-ural',
-	desc: 'Let me tell you how to live your life'
+	title: 'Let me tell you how to live your life',
+	desc: 'Do you even believe, bro?'
 });
 
