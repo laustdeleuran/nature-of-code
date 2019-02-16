@@ -28,7 +28,7 @@ for (let i = 0; i < 4; i++) {
 
 
 /**
- * Pointer
+ * Gamepad
  */
 let activePointer;
 const MULTIPLIER = 4;
@@ -51,6 +51,50 @@ bindGamepad(({ axis, buttons }) => {
 	if (buttons.y === true && lastSeenBtns.y !== true) players[3].start();
 
 	lastSeenBtns = buttons;
+});
+
+// Bind keyboard
+document.addEventListener('keyup', event => {
+	console.log('keyup', event.key);
+	switch (event.key.toLowerCase()) {
+		case 'a':
+			players[0].start();
+			break;
+		case 'b':
+			players[1].start();
+			break;
+		case 'x':
+			players[2].start();
+			break;
+		case 'y':
+			players[3].start();
+			break;
+	}
+});
+
+document.addEventListener('keydown', event => {
+	let hasChange = false;
+
+	switch (event.key.toLowerCase()) {
+		case 'arrowup':
+			pointer.y = constrain(pointer.y - 10, 0, window.innerHeight);
+			hasChange = true;
+			break;
+		case 'arrowdown':
+			pointer.y = constrain(pointer.y + 10, 0, window.innerHeight);
+			hasChange = true;
+			break;
+		case 'arrowleft':
+			pointer.x = constrain(pointer.x - 10, 0, window.innerHeight);
+			hasChange = true;
+			break;
+		case 'arrowright':
+			pointer.x = constrain(pointer.x + 10, 0, window.innerHeight);
+			hasChange = true;
+			break;
+	}
+
+	if (hasChange) activePointer = pointer;
 });
 
 

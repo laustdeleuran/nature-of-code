@@ -7,6 +7,7 @@
 compass_app_log.txt
 atlassian-ide-plugin.xml
 *.sublime-workspace
+.vscode
 
 # npm installs
 node_modules*
