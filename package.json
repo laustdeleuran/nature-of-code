@@ -4,11 +4,12 @@
   "version": "0.1.7",
   "description": "Various examples, experiments and utils that I've made as part of reading [The Nature of Code](http://natureofcode.com/).",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf build && webpack --config webpack/prod.babel.js",
     "deploy": "npm run build && ./deploy.sh",
     "dev": "rimraf build && webpack-dev-server --config webpack/dev.babel.js --progress",
-    "build": "rimraf build && webpack --config webpack/prod.babel.js",
-    "start": "npm run build && http-server ./build"
+    "pretty-quick": "pretty-quick",
+    "start": "npm run build && http-server ./build",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

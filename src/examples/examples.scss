@@ -2,7 +2,8 @@
 
 $color-pink: #eb005a;
 
-html, body {
-	background: $color-pink;
-	background-image: radial-gradient(lighten($color-pink, 20), $color-pink);
+html,
+body {
+  background: $color-pink;
+  background-image: radial-gradient(lighten($color-pink, 20), $color-pink);
 }
