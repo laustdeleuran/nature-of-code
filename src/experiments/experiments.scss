@@ -4,6 +4,6 @@ $color-black: rgb(8, 28, 40);
 
 html,
 body {
-  background: $color-black;
-  background-image: radial-gradient(lighten($color-black, 20), $color-black);
+	background: $color-black;
+	background-image: radial-gradient(lighten($color-black, 20), $color-black);
 }

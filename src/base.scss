@@ -1,46 +1,47 @@
 html,
 body {
-  overflow: hidden;
-  margin: 0;
+	overflow: hidden;
+	margin: 0;
 
-  color: white;
-  font-family: sans-serif;
-  font-weight: 300;
+	color: white;
+	font-family: sans-serif;
+	font-weight: 300;
 
-  background: #333;
+	background: #333;
 }
 
 canvas {
-  width: 100vw;
-  height: 100vh;
+	width: 100vw;
+	height: 100vh;
 }
 
 h1,
 p {
-  margin: 0;
-  overflow: hidden;
+	margin: 0;
+	overflow: hidden;
 
-  position: absolute;
-  right: 0.5em;
-  left: 0.5em;
+	position: absolute;
+	right: 0.5em;
+	left: 0.5em;
+	z-index: 100;
 
-  font-size: 1em;
-  line-height: 1.25em;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  white-space: nowrap;
+	font-size: 1em;
+	line-height: 1.25em;
+	text-transform: uppercase;
+	letter-spacing: 0.15em;
+	white-space: nowrap;
 
-  pointer-events: none;
+	pointer-events: none;
 }
 
 h1 {
-  bottom: 0.5em;
+	bottom: 0.5em;
 
-  font-weight: 700;
+	font-weight: 700;
 }
 
 p {
-  bottom: 1.75em;
+	bottom: 1.75em;
 
-  font-weight: 100;
+	font-weight: 100;
 }

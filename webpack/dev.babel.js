@@ -17,23 +17,21 @@ const alwaysInclude = [
 
 	// bundle the client for hot reloading
 	// only- means to only hot reload for successful updates
-	'webpack/hot/only-dev-server'
+	'webpack/hot/only-dev-server',
 ];
 
 for (let key in compiler.entry) {
-	compiler.entry[key] = [ ...alwaysInclude, ...compiler.entry[key] ];
+	compiler.entry[key] = [...alwaysInclude, ...compiler.entry[key]];
 }
 
-
-
+// set mode
 compiler.mode = 'development';
 
-
+// creates source maps
+compiler.devtool = 'eval';
 
 // Watch
 compiler.watch = true;
-
-
 
 // Setup dev server
 compiler.devServer = {
@@ -85,16 +83,9 @@ compiler.devServer = {
 		// Add webpack version information
 		version: false,
 		// Add warnings
-		warnings: true
-	}
+		warnings: true,
+	},
 };
-
-
-
-// Set dev tool
-compiler.devtool = 'source-map';
-
-
 
 // Add extra plugins for dev
 compiler.plugins = [
@@ -103,8 +94,8 @@ compiler.plugins = [
 	// set 'development' environment
 	new webpack.DefinePlugin({
 		'process.env': {
-			'NODE_ENV': JSON.stringify('development')
-		}
+			NODE_ENV: JSON.stringify('development'),
+		},
 	}),
 
 	// Shows a progress bar when building
@@ -123,20 +114,18 @@ compiler.plugins = [
 			// through BrowserSync
 			proxy: 'http://localhost:3100',
 			// Don't minify the client-side JS
-			minify: false
+			minify: false,
 		},
 		// plugin options
 		{
 			// prevent BrowserSync from reloading the page
 			// and let Webpack Dev Server take care of this
-			reload: false
+			reload: false,
 		}
 	),
 
 	// Adds hot module relacement
-	new webpack.HotModuleReplacementPlugin()
+	new webpack.HotModuleReplacementPlugin(),
 ];
-
-
 
 export default compiler;

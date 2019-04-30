@@ -1,0 +1,80 @@
+// Font
+@import url('https://fonts.googleapis.com/css?family=Just+Another+Hand');
+
+// Settings
+$color-shadow: #0049b8;
+$color-face: #1ac1ed;
+$color-text: #fff;
+$font-stack: 'Just Another Hand', 'Comic Sans', cursive;
+
+// Button
+.button {
+	display: block;
+	padding: 2vw;
+	padding-top: 2.2vw; // Visually center font vertically
+	padding-bottom: 1.2vw; // Visually center font vertically
+
+	position: absolute;
+	top: 50%;
+
+	font-family: $font-stack;
+	font-size: 4vw;
+	color: $color-text;
+	line-height: 1em;
+	text-transform: uppercase;
+	text-align: center;
+	text-decoration: none;
+
+	// background: $color-face;
+
+	canvas {
+		width: 100%;
+		height: 100%;
+
+		position: absolute;
+		top: 0;
+		right: 0;
+
+		background: #f0f;
+	}
+}
+
+.button__text {
+	position: relative;
+	z-index: 2;
+}
+
+.button--left {
+	right: 55%;
+
+	transform: rotate(-10deg);
+	transform-origin: top right;
+}
+
+.button--right {
+	left: 55%;
+
+	transform: rotate(10deg);
+	transform-origin: top left;
+}
+
+// Player
+.player {
+	width: 100vw;
+	height: 100vw * 9/16;
+
+	position: absolute;
+	top: 50%;
+
+	background: #333 url('https://cl.ly/a226613309e8/pbj.jpg') center center
+		no-repeat;
+	background-size: cover;
+
+	transform: translateY(-50%);
+}
+
+// Base styles
+html,
+body {
+	background: black;
+}
