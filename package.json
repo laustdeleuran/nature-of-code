@@ -42,6 +42,7 @@
 		"browser-sync-webpack-plugin": "^2.2.2",
 		"browsernizr": "^2.2.0",
 		"captainslog": "^0.3.2",
+		"classnames": "^2.2.6",
 		"cname-webpack-plugin": "^1.0.2",
 		"color": "^3.0.0",
 		"css-loader": "^0.28.11",

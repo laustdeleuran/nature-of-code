@@ -1,4 +1,5 @@
 import log from 'koalition-utils/log';
+import classNames from 'classnames/dedupe';
 
 /**
  * SVG path helpers
@@ -80,18 +81,30 @@ const lineToAngle = (context, x1, y1, length, angle) => {
 /**
  * Button
  */
-const BUTTON_STATE_HIDDEN = 'BUTTON_STATE_HIDDEN';
-const BUTTON_STATE_APPEAR = 'BUTTON_STATE_APPEAR';
-const BUTTON_STATE_IDLE = 'BUTTON_STATE_IDLE';
-const BUTTON_STATE_SELECT = 'BUTTON_STATE_SELECT';
-const BUTTON_STATE_SELECT_DISAPPEAR = 'BUTTON_STATE_SELECT_DISAPPEAR';
-const BUTTON_STATE_UNSELECT = 'BUTTON_STATE_UNSELECT';
-const BUTTON_STATE_UNSELECT_DISAPPEAR = 'BUTTON_STATE_UNSELECT_DISAPPEAR';
+export const BUTTON_STATE_APPEAR = 'appear';
+export const BUTTON_STATE_HIDDEN = 'hidden';
+export const BUTTON_STATE_HOVER = 'hover';
+export const BUTTON_STATE_IDLE = 'idle';
+export const BUTTON_STATE_SELECT = 'select';
+export const BUTTON_STATE_SELECT_DISAPPEAR = 'select-disappear';
+export const BUTTON_STATE_UNSELECT = 'unselect';
+export const BUTTON_STATE_UNSELECT_DISAPPEAR = 'unselect-disappear';
+const BUTTON_STATES = [
+	BUTTON_STATE_APPEAR,
+	BUTTON_STATE_HIDDEN,
+	BUTTON_STATE_HOVER,
+	BUTTON_STATE_IDLE,
+	BUTTON_STATE_SELECT,
+	BUTTON_STATE_SELECT_DISAPPEAR,
+	BUTTON_STATE_UNSELECT,
+	BUTTON_STATE_UNSELECT_DISAPPEAR,
+];
 
 export default class Button {
 	/**
 	 * @constructor
 	 * @param {object} settings
+	 *   @prop {string} classPrefix
 	 *   @prop {string} colorFace
 	 *   @prop {string} colorShadow
 	 *   @prop {DOMElement} element
@@ -99,6 +112,7 @@ export default class Button {
 	 *   @prop {string} shadow
 	 */
 	constructor({
+		classPrefix = 'button--',
 		colorFace = '#1ac1ed',
 		colorShadow = '#0049b8',
 		element,
@@ -112,6 +126,7 @@ export default class Button {
 
 		this._vars = {
 			canvas,
+			classPrefix,
 			colorFace,
 			colorShadow,
 			context,
@@ -121,7 +136,7 @@ export default class Button {
 			step: 0,
 		};
 
-		this._state = BUTTON_STATE_HIDDEN;
+		this.state = BUTTON_STATE_HIDDEN;
 
 		this.resize();
 	}
@@ -151,7 +166,7 @@ export default class Button {
 		}
 
 		// Clear canvas
-		// context.clearRect(0, 0, width, height);
+		context.clearRect(0, 0, width, height);
 
 		// Draw shadow
 		context.fillStyle = colorShadow;
@@ -162,7 +177,7 @@ export default class Button {
 		context.fill(facePath);
 
 		// Draw shine
-		// this.drawShine();
+		this.drawShine();
 
 		// Count frames for animation purposes
 		this._vars.step = step + 1;
@@ -172,8 +187,7 @@ export default class Button {
 	 * Draw shine
 	 */
 	drawShine() {
-		const { width, height } = this._size;
-
+		const { width, height, x: xOrigin, y: yOrigin } = this._size;
 		const { context, facePath, margin, shadow, step } = this._vars;
 
 		const fps = 60;
@@ -184,16 +198,16 @@ export default class Button {
 		if (seconds < transition) {
 			const pct = seconds / transition;
 			const innerWidth = width - margin * 2;
-			const angle = 80 * (shadow === 'right' ? 1 : -1);
-			const y = shadow === 'right' ? 0 : height;
 			// const innerHeight = height - margin * 2;
+			const angle = 80 * (shadow === 'right' ? 1 : -1);
+			const y = yOrigin * (shadow === 'right' ? 1 : -1);
 
 			context.save();
 
 			context.clip(facePath);
 			context.globalCompositeOperation = 'screen';
 
-			let x = width * 1.5 * pct - width * 0.25;
+			let x = xOrigin + width * 1.5 * pct - width * 0.25;
 			context.strokeStyle = 'rgba(255, 255, 255, 0.3)';
 
 			context.lineWidth = Math.round(innerWidth * 0.2);
@@ -264,34 +278,51 @@ export default class Button {
 	 * Set state
 	 * @param {enum} state
 	 */
-	setState(state) {
+	set state(state) {
 		this._state = state;
 
+		// Update class name
+		const { classPrefix, element } = this._vars;
+		const stateClassNames = {};
+		BUTTON_STATES.forEach(
+			stateName =>
+				(stateClassNames[`${classPrefix}${stateName}`] = state === stateName)
+		);
+		element.className = classNames(element.className, stateClassNames);
+
+		// Set internal state
 		clearTimeout(this._vars.stateTimer);
 		if (state === BUTTON_STATE_APPEAR)
 			this._vars.stateTimer = setTimeout(
-				() => this.setState(BUTTON_STATE_IDLE),
+				() => (this.state = BUTTON_STATE_IDLE),
 				333
 			);
-		// else if (state === BUTTON_STATE_SELECT)
-		// 	this._vars.stateTimer = setTimeout(
-		// 		() => this.setState(BUTTON_STATE_SELECT_DISAPPEAR),
-		// 		333
-		// 	);
+		else if (state === BUTTON_STATE_SELECT)
+			this._vars.stateTimer = setTimeout(
+				() => (this.state = BUTTON_STATE_SELECT_DISAPPEAR),
+				1000
+			);
 		else if (state === BUTTON_STATE_UNSELECT)
 			this._vars.stateTimer = setTimeout(
-				() => this.setState(BUTTON_STATE_UNSELECT_DISAPPEAR),
+				() => (this.state = BUTTON_STATE_UNSELECT_DISAPPEAR),
 				250
 			);
 		else if (state === BUTTON_STATE_SELECT_DISAPPEAR)
 			this._vars.stateTimer = setTimeout(
-				() => this.setState(BUTTON_STATE_HIDDEN),
+				() => (this.state = BUTTON_STATE_HIDDEN),
 				500
 			);
 		else if (state === BUTTON_STATE_UNSELECT_DISAPPEAR)
 			this._vars.stateTimer = setTimeout(
-				() => this.setState(BUTTON_STATE_HIDDEN),
+				() => (this.state = BUTTON_STATE_HIDDEN),
 				250
 			);
+	}
+
+	/**
+	 * Get state
+	 */
+	get state() {
+		return this._state;
 	}
 }

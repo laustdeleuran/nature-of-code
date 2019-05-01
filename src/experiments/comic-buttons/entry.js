@@ -5,7 +5,16 @@ import Label from '../../helpers/label';
 
 import '../experiments.scss';
 import './style.scss';
-import Button from './button';
+import Button, {
+	BUTTON_STATE_APPEAR,
+	BUTTON_STATE_HIDDEN,
+	BUTTON_STATE_HOVER,
+	BUTTON_STATE_IDLE,
+	BUTTON_STATE_SELECT,
+	BUTTON_STATE_SELECT_DISAPPEAR,
+	BUTTON_STATE_UNSELECT,
+	BUTTON_STATE_UNSELECT_DISAPPEAR,
+} from './button';
 
 /**
  * Project label
@@ -21,10 +30,10 @@ new Label({
 const player = document.createElement('div');
 player.className = 'player';
 player.innerHTML = `
-  <a href="#button" class="button button--left">
+  <a href="#button" class="button button--left button--hidden">
     <span class="button__text">Smooth</span>
   </a>
-  <a href="#button" class="button button--right">
+  <a href="#button" class="button button--right button--hidden">
     <span class="button__text">Super<br/>crunchy</span>
   </a>
 `;
@@ -40,13 +49,21 @@ window.addEventListener('load', () => {
 
 	for (let i = 0; i < elements.length; i++) {
 		const element = elements[i];
-		btns.push(
-			new Button({
-				element: element,
-				shadow:
-					element.className.indexOf('button--right') > -1 ? 'right' : 'left',
-			})
-		);
+		const btn = new Button({
+			element: element,
+			shadow:
+				element.className.indexOf('button--right') > -1 ? 'right' : 'left',
+		});
+		btns.push(btn);
+
+		setTimeout(() => (btn.state = BUTTON_STATE_APPEAR), 10);
+		element.addEventListener('mouseenter', () => {
+			if (btn.state === BUTTON_STATE_IDLE) btn.state = BUTTON_STATE_HOVER;
+		});
+		element.addEventListener('mouseleave', () => {
+			if (btn.state === BUTTON_STATE_HOVER) btn.state = BUTTON_STATE_IDLE;
+		});
+		element.addEventListener('click', () => (btn.state = BUTTON_STATE_SELECT));
 	}
 
 	animator.start(() => btns.forEach(btn => btn.draw()));
