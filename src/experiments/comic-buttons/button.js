@@ -151,7 +151,7 @@ export default class Button {
 		}
 
 		// Clear canvas
-		// context.clearRect(0, 0, width, height);
+		context.clearRect(0, 0, width, height);
 
 		// Draw shadow
 		context.fillStyle = colorShadow;
@@ -162,7 +162,7 @@ export default class Button {
 		context.fill(facePath);
 
 		// Draw shine
-		// this.drawShine();
+		this.drawShine();
 
 		// Count frames for animation purposes
 		this._vars.step = step + 1;
